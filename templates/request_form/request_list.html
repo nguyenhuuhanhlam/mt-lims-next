@@ -5,69 +5,76 @@
 
 {% block topbar_actions %}
 <a href="{% url 'request_create' %}"
-   class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-700 transition-colors">
-  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+   class="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-xs font-bold rounded-xl hover:bg-gray-800 transition-all shadow-sm">
+  <i data-lucide="plus" class="w-4 h-4"></i>
   Tạo mới
 </a>
 {% endblock %}
 
 {% block content %}
-<div class="flex h-full" x-data="{ selected: null, detail: null }">
+<div class="flex h-full bg-white" x-data="{ selected: null, detail: null }">
 
   <!-- ── LEFT: List ── -->
   <div class="flex-1 flex flex-col min-w-0 border-r border-gray-100">
 
     <!-- Toolbar -->
-    <div class="px-4 py-3 flex items-center gap-3 border-b border-gray-100">
-      <!-- Search -->
-      <div class="relative">
-        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input
-          type="text"
-          placeholder="Tìm kiếm..."
-          class="pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-lg w-52 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 bg-gray-50"
-          id="searchInput"
-          oninput="filterTable(this.value)"
-        />
+    <div class="px-5 py-3 flex items-center justify-between border-b border-gray-50 bg-gray-50/20">
+      <div class="flex items-center gap-3">
+        <!-- Search -->
+        <div class="relative group">
+          <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-indigo-500 transition-colors"></i>
+          <input
+            type="text"
+            placeholder="Tìm kiếm..."
+            class="pl-8 pr-3 py-1.5 text-[12px] border border-gray-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white transition-all shadow-sm"
+            id="searchInput"
+            oninput="filterTable(this.value)"
+          />
+        </div>
+
+        <!-- Filter by type -->
+        <div class="flex items-center p-0.5 bg-gray-100/50 rounded-lg border border-gray-100">
+          <button onclick="setFilter('all')" id="filter-all"
+            class="filter-btn active-filter px-3 py-1 text-[11px] font-bold rounded-md transition-all">
+            Tất cả
+          </button>
+          <button onclick="setFilter('contract')" id="filter-contract"
+            class="filter-btn px-3 py-1 text-[11px] font-bold rounded-md transition-all text-gray-500 hover:text-gray-900">
+            Hợp đồng
+          </button>
+          <button onclick="setFilter('slip')" id="filter-slip"
+            class="filter-btn px-3 py-1 text-[11px] font-bold rounded-md transition-all text-gray-500 hover:text-gray-900">
+            Phiếu lẻ
+          </button>
+        </div>
       </div>
 
-      <!-- Filter by type -->
-      <div class="flex items-center gap-1">
-        <button onclick="setFilter('all')" id="filter-all"
-          class="filter-btn active-filter px-2.5 py-1 text-xs rounded-md transition-colors">
-          Tất cả
-        </button>
-        <button onclick="setFilter('contract')" id="filter-contract"
-          class="filter-btn px-2.5 py-1 text-xs rounded-md transition-colors text-gray-500 hover:bg-gray-100">
-          Hợp đồng
-        </button>
-        <button onclick="setFilter('slip')" id="filter-slip"
-          class="filter-btn px-2.5 py-1 text-xs rounded-md transition-colors text-gray-500 hover:bg-gray-100">
-          Phiếu
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ requests|length }} bản ghi</span>
+        <button class="p-1.5 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200">
+          <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
         </button>
       </div>
-
-      <span class="ml-auto text-xs text-gray-400">{{ requests|length }} bản ghi</span>
     </div>
 
     <!-- Table -->
     <div class="flex-1 overflow-auto">
-      <table class="w-full text-xs" id="requestTable">
-        <thead class="sticky top-0 bg-white border-b border-gray-100 z-10">
-          <tr>
-            <th class="text-left text-[10px] font-medium text-gray-400 uppercase tracking-wider px-4 py-2.5 w-8">
-              <input type="checkbox" class="rounded border-gray-300 w-3.5 h-3.5" />
+      <table class="w-full text-left border-separate border-spacing-0" id="requestTable">
+        <thead class="sticky top-0 bg-white/80 backdrop-blur-md z-10">
+          <tr class="border-b border-gray-100">
+            <th class="px-5 py-3 w-10 border-b border-gray-100">
+              <input type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5" />
             </th>
-            <th class="text-left text-[10px] font-medium text-gray-400 uppercase tracking-wider px-3 py-2.5">Tiêu đề</th>
-            <th class="text-left text-[10px] font-medium text-gray-400 uppercase tracking-wider px-3 py-2.5 w-28">Loại</th>
-            <th class="text-left text-[10px] font-medium text-gray-400 uppercase tracking-wider px-3 py-2.5 w-32">Người tạo</th>
-            <th class="text-left text-[10px] font-medium text-gray-400 uppercase tracking-wider px-3 py-2.5 w-36">Ngày tạo</th>
+            <th class="px-3 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Tiêu đề</th>
+            <th class="px-3 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-28">Loại phiếu</th>
+            <th class="px-3 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-36">Người tạo</th>
+            <th class="px-5 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-40 text-right">Ngày tạo</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-50" id="requestTableBody">
           {% for req in requests %}
           <tr
-            class="hover:bg-gray-50/80 cursor-pointer transition-colors group request-row"
+            class="hover:bg-indigo-50/30 cursor-pointer transition-all group request-row relative"
             data-type="{{ req.type }}"
             data-id="{{ req.id }}"
             data-title="{{ req.title }}"
@@ -77,40 +84,44 @@
             data-reqtype="{{ req.get_type_display }}"
             onclick="openDetail(this)"
           >
-            <td class="px-4 py-2.5">
-              <input type="checkbox" class="rounded border-gray-300 w-3.5 h-3.5 opacity-0 group-hover:opacity-100" onclick="event.stopPropagation()" />
+            <td class="px-5 py-2.5">
+              <input type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()" />
             </td>
             <td class="px-3 py-2.5">
-              <span class="font-medium text-gray-800">{{ req.title }}</span>
+              <div class="flex flex-col">
+                <span class="text-[13px] font-bold text-gray-900 group-hover:text-indigo-600 transition-colors leading-tight">{{ req.title }}</span>
+                <span class="text-[11px] text-gray-400 line-clamp-1 font-medium">{{ req.content|truncatechars:50 }}</span>
+              </div>
             </td>
             <td class="px-3 py-2.5">
               {% if req.type == 'contract' %}
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-violet-50 text-violet-600 border border-violet-100">
-                <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span> Hợp đồng
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100/50">
+                Hợp đồng
               </span>
               {% else %}
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 text-blue-600 border border-blue-100">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Phiếu
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100/50">
+                Phiếu lẻ
               </span>
               {% endif %}
             </td>
-            <td class="px-3 py-2.5 text-gray-500">
-              <div class="flex items-center gap-1.5">
-                <div class="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-300 to-purple-400 flex items-center justify-center">
-                  <span class="text-white text-[9px] font-semibold">{{ req.created_by.username|first|upper }}</span>
+            <td class="px-3 py-2.5">
+              <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[9px] font-bold text-gray-500">
+                  {{ req.created_by.username|first|upper }}
                 </div>
-                {{ req.created_by.get_full_name|default:req.created_by.username }}
+                <span class="text-[12px] font-semibold text-gray-700">{{ req.created_by.get_full_name|default:req.created_by.username }}</span>
               </div>
             </td>
-            <td class="px-3 py-2.5 text-gray-400">{{ req.created_at|date:"d/m/Y H:i" }}</td>
+            <td class="px-5 py-2.5 text-right">
+              <span class="text-[11px] font-semibold text-gray-400 group-hover:text-gray-600 transition-colors">{{ req.created_at|date:"d/m/Y H:i" }}</span>
+            </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="5" class="px-4 py-16 text-center">
-              <div class="flex flex-col items-center gap-3 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                <p class="text-sm">Chưa có phiếu yêu cầu nào</p>
-                <a href="{% url 'request_create' %}" class="text-xs text-gray-800 underline underline-offset-2">Tạo phiếu đầu tiên</a>
+            <td colspan="5" class="px-5 py-16 text-center">
+              <div class="flex flex-col items-center gap-3 text-gray-300">
+                <i data-lucide="file-x" class="w-6 h-6"></i>
+                <p class="text-[12px] font-bold text-gray-400">Trống</p>
               </div>
             </td>
           </tr>
@@ -123,56 +134,77 @@
   <!-- ── RIGHT: Detail Panel ── -->
   <div
     id="detailPanel"
-    class="hidden flex-col w-[380px] flex-shrink-0 border-l border-gray-100 bg-white overflow-hidden"
+    class="hidden flex-col w-[380px] flex-shrink-0 border-l border-gray-100 bg-white overflow-hidden shadow-xl transition-all duration-300 ease-in-out transform translate-x-full"
+    style="display: none;"
   >
     <!-- Panel Header -->
-    <div class="h-11 border-b border-gray-100 px-4 flex items-center gap-2 flex-shrink-0">
-      <span class="text-sm font-medium text-gray-800 flex-1 truncate" id="detail-title">—</span>
-      <button onclick="closeDetail()" class="p-1 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    <div class="h-12 border-b border-gray-100 px-5 flex items-center justify-between flex-shrink-0 bg-gray-50/30">
+      <div class="flex items-center gap-2 overflow-hidden">
+        <i data-lucide="info" class="w-3.5 h-3.5 text-indigo-500 flex-shrink-0"></i>
+        <span class="text-[13px] font-bold text-gray-900 truncate" id="detail-title">—</span>
+      </div>
+      <button onclick="closeDetail()" class="p-1.5 rounded-lg hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 text-gray-400 hover:text-gray-900 transition-all">
+        <i data-lucide="x" class="w-3.5 h-3.5"></i>
       </button>
     </div>
 
     <!-- Panel Body -->
-    <div class="flex-1 overflow-auto p-4 space-y-5">
+    <div class="flex-1 overflow-auto p-6 space-y-6">
 
-      <!-- Type badge -->
-      <div class="flex items-center gap-3">
-        <span class="text-xs text-gray-400 w-24">Loại</span>
-        <span id="detail-type" class="text-xs"></span>
+      <!-- Stats section -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1">
+          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Loại yêu cầu</p>
+          <div id="detail-type"></div>
+        </div>
+        <div class="space-y-1">
+          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Trạng thái</p>
+          <div class="pt-0.5">
+             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-600 border border-green-100/50">Đang xử lý</span>
+          </div>
+        </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <span class="text-xs text-gray-400 w-24">Người tạo</span>
-        <span id="detail-author" class="text-xs text-gray-700"></span>
+      <div class="space-y-4 pt-2">
+        <div class="flex items-center justify-between">
+           <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Người tạo</span>
+           <span id="detail-author" class="text-[12px] font-bold text-gray-900"></span>
+        </div>
+
+        <div class="flex items-center justify-between">
+           <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ngày tạo</span>
+           <span id="detail-created" class="text-[12px] font-bold text-gray-900"></span>
+        </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <span class="text-xs text-gray-400 w-24">Ngày tạo</span>
-        <span id="detail-created" class="text-xs text-gray-700"></span>
-      </div>
-
-      <div class="border-t border-gray-100 pt-4">
-        <p class="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">Nội dung</p>
-        <p id="detail-content" class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap"></p>
+      <div class="pt-6 border-t border-gray-100">
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Nội dung</p>
+        <div class="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+          <p id="detail-content" class="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap font-medium"></p>
+        </div>
       </div>
     </div>
 
     <!-- Panel Footer -->
-    <div class="border-t border-gray-100 p-3 flex gap-2">
-      <a id="detail-edit-link" href="#" class="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-gray-700">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+    <div class="border-t border-gray-100 p-5 bg-gray-50/30 flex gap-2.5">
+      <a id="detail-edit-link" href="#" class="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-bold bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-gray-900 shadow-sm">
+        <i data-lucide="edit-3" class="w-3 h-3"></i>
         Chỉnh sửa
       </a>
-      <button class="px-3 py-1.5 text-xs font-medium border border-gray-200 rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors text-gray-500">
-        Xoá
+      <button class="px-3 py-2 text-[12px] font-bold bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 transition-all shadow-sm">
+        <i data-lucide="trash-2" class="w-3 h-3"></i>
       </button>
     </div>
   </div>
 </div>
 
 <style>
-  .active-filter { background-color: #f3f4f6; color: #111827; font-weight: 500; }
+  .active-filter { 
+    background-color: #ffffff; 
+    color: #0f172a; 
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    border: 1px solid #e5e7eb;
+  }
 </style>
 
 <script>
@@ -181,12 +213,12 @@
   function setFilter(type) {
     currentFilter = type;
     document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.classList.remove('active-filter', 'text-gray-900');
-      btn.classList.add('text-gray-500', 'hover:bg-gray-100');
+      btn.classList.remove('active-filter');
+      btn.classList.add('text-gray-500', 'hover:text-gray-900');
     });
     const active = document.getElementById('filter-' + type);
     active.classList.add('active-filter');
-    active.classList.remove('text-gray-500', 'hover:bg-gray-100');
+    active.classList.remove('text-gray-500', 'hover:text-gray-900');
     applyFilters();
   }
 
@@ -195,19 +227,17 @@
   function applyFilters(query) {
     query = query ?? document.getElementById('searchInput').value;
     const rows = document.querySelectorAll('.request-row');
-    let visible = 0;
     rows.forEach(row => {
       const matchType = currentFilter === 'all' || row.dataset.type === currentFilter;
       const matchQuery = !query || row.dataset.title.toLowerCase().includes(query.toLowerCase());
       const show = matchType && matchQuery;
       row.style.display = show ? '' : 'none';
-      if (show) visible++;
     });
   }
 
   function openDetail(row) {
-    document.querySelectorAll('.request-row').forEach(r => r.classList.remove('bg-blue-50/40'));
-    row.classList.add('bg-blue-50/40');
+    document.querySelectorAll('.request-row').forEach(r => r.classList.remove('bg-indigo-50/50', 'ring-1', 'ring-indigo-100'));
+    row.classList.add('bg-indigo-50/50', 'ring-1', 'ring-indigo-100');
 
     document.getElementById('detail-title').textContent = row.dataset.title;
     document.getElementById('detail-content').textContent = row.dataset.content;
@@ -217,19 +247,28 @@
 
     const typeEl = document.getElementById('detail-type');
     if (row.dataset.type === 'contract') {
-      typeEl.innerHTML = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-violet-50 text-violet-600 border border-violet-100"><span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span> Hợp đồng</span>';
+      typeEl.innerHTML = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100/50"><span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Hợp đồng</span>';
     } else {
-      typeEl.innerHTML = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 text-blue-600 border border-blue-100"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Phiếu</span>';
+      typeEl.innerHTML = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100/50"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Phiếu lẻ</span>';
     }
 
-    document.getElementById('detailPanel').classList.remove('hidden');
-    document.getElementById('detailPanel').classList.add('flex');
+    const panel = document.getElementById('detailPanel');
+    panel.style.display = 'flex';
+    setTimeout(() => {
+      panel.classList.remove('hidden', 'translate-x-full');
+    }, 10);
+    
+    lucide.createIcons();
   }
 
   function closeDetail() {
-    document.querySelectorAll('.request-row').forEach(r => r.classList.remove('bg-blue-50/40'));
-    document.getElementById('detailPanel').classList.add('hidden');
-    document.getElementById('detailPanel').classList.remove('flex');
+    document.querySelectorAll('.request-row').forEach(r => r.classList.remove('bg-indigo-50/50', 'ring-1', 'ring-indigo-100'));
+    const panel = document.getElementById('detailPanel');
+    panel.classList.add('translate-x-full');
+    setTimeout(() => {
+      panel.classList.add('hidden');
+      panel.style.display = 'none';
+    }, 300);
   }
 </script>
 {% endblock %}

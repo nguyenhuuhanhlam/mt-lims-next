@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -17,21 +18,25 @@ def request_list_api(request):
 
 
 # ─── Template Views ─────────────────────────────────────────
+@login_required
 def request_list(request):
     requests = Request.objects.select_related("created_by").order_by("-created_at")
     return render(request, "request_form/request_list.html", {"requests": requests})
 
 
+@login_required
 def request_create(request):
-    form = RequestForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        obj = form.save(commit=False)
-        obj.created_by = request.user
-        obj.save()
-        return redirect("request_list")
+    if request.method == "POST":
+        form = RequestForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("request_list")
+    else:
+        form = RequestForm(initial={"created_by": request.user})
     return render(request, "request_form/request_create.html", {"form": form})
 
 
+@login_required
 def dashboard(request):
     today = timezone.now().date()
     context = {

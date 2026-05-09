@@ -1,10 +1,11 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from request_form.views import request_list, request_create, request_list_api, dashboard
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("accounts/", include("django.contrib.auth.urls")),
 
     # Dashboard
     path("", dashboard, name="dashboard"),
