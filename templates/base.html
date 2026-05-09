@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi" x-data="{ sidebarOpen: true }">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}MT-LIMS{% endblock %}</title>
+
+  <!-- TailwindCSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            sidebar: '#f9f9f9',
+          },
+          transitionProperty: {
+            width: 'width',
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    [x-cloak] { display: none !important; }
+    body { font-family: 'Inter', sans-serif; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
+
+    /* Sidebar transition */
+    .sidebar-transition { transition: width 200ms ease; }
+
+    /* Active nav item */
+    .nav-active {
+      background-color: #f3f4f6;
+      color: #111827;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800 antialiased h-screen flex overflow-hidden">
+
+  <!-- ════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════ -->
+  <aside
+    class="sidebar-transition flex-shrink-0 flex flex-col border-r border-gray-100 bg-[#f9f9f9] overflow-hidden"
+    :class="sidebarOpen ? 'w-[220px]' : 'w-[52px]'"
+  >
+
+    <!-- Workspace Switcher -->
+    <div class="px-3 pt-4 pb-2">
+      <button class="w-full flex items-center gap-2 py-1.5 rounded-lg hover:bg-gray-200/60 transition-colors group" :class="sidebarOpen ? 'px-2' : 'justify-center px-0'">
+        <div class="w-6 h-6 rounded-md bg-gray-800 flex items-center justify-center flex-shrink-0">
+          <span class="text-white text-[11px] font-semibold">MT</span>
+        </div>
+        <span x-show="sidebarOpen" x-cloak class="text-sm font-medium text-gray-700 truncate">MT-LIMS</span>
+        <svg x-show="sidebarOpen" x-cloak xmlns="http://www.w3.org/2000/svg" class="ml-auto h-3.5 w-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </div>
+
+    <!-- Search -->
+    <div class="px-3 py-1" x-show="sidebarOpen" x-cloak>
+      <button class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-200/60 transition-colors text-gray-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span class="text-xs">Tìm kiếm...</span>
+        <span class="ml-auto text-[10px] border border-gray-200 rounded px-1">⌘K</span>
+      </button>
+    </div>
+
+    <!-- Nav Scroll Area -->
+    <nav class="flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
+
+      <!-- Main nav items -->
+      <a href="{% url 'dashboard' %}"
+         class="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm text-gray-600 hover:bg-gray-200/60 hover:text-gray-900 transition-colors {% if request.resolver_match.url_name == 'dashboard' %}nav-active{% endif %}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span x-show="sidebarOpen" x-cloak class="truncate">Dashboard</span>
+      </a>
+
+      <!-- Group: Nghiệp vụ -->
+      <div class="pt-3 pb-1 px-2" x-show="sidebarOpen" x-cloak>
+        <span class="text-[10px] font-medium text-gray-400 uppercase tracking-widest">Nghiệp vụ</span>
+      </div>
+      <div x-show="!sidebarOpen" class="border-t border-gray-200 my-2 mx-2"></div>
+
+      <a href="{% url 'request_list' %}"
+         class="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm text-gray-600 hover:bg-gray-200/60 hover:text-gray-900 transition-colors {% if request.resolver_match.url_name == 'request_list' %}nav-active{% endif %}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+        <span x-show="sidebarOpen" x-cloak class="truncate">Phiếu yêu cầu</span>
+      </a>
+
+      <a href="#"
+         class="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm text-gray-600 hover:bg-gray-200/60 hover:text-gray-900 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <span x-show="sidebarOpen" x-cloak class="truncate">Hợp đồng</span>
+        <span x-show="sidebarOpen" x-cloak class="ml-auto text-[10px] bg-gray-200 text-gray-500 rounded px-1.5 py-0.5">Soon</span>
+      </a>
+
+      <!-- Group: Hệ thống -->
+      <div class="pt-3 pb-1 px-2" x-show="sidebarOpen" x-cloak>
+        <span class="text-[10px] font-medium text-gray-400 uppercase tracking-widest">Hệ thống</span>
+      </div>
+      <div x-show="!sidebarOpen" class="border-t border-gray-200 my-2 mx-2"></div>
+
+      <a href="/admin/"
+         class="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm text-gray-600 hover:bg-gray-200/60 hover:text-gray-900 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span x-show="sidebarOpen" x-cloak class="truncate">Admin</span>
+      </a>
+
+    </nav>
+
+    <!-- Bottom: User + Collapse -->
+    <div class="border-t border-gray-100 p-2 flex items-center gap-2" :class="sidebarOpen ? '' : 'justify-center'">
+      <!-- Avatar: khi collapsed, click để mở rộng sidebar -->
+      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center flex-shrink-0">
+        <span class="text-white text-[11px] font-semibold">A</span>
+      </div>
+      <div x-show="sidebarOpen" x-cloak class="flex-1 min-w-0">
+        <p class="text-xs font-medium text-gray-700 truncate">Admin</p>
+        <p class="text-[10px] text-gray-400 truncate">mt-lims.local</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════ -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- Topbar -->
+    <header class="h-11 border-b border-gray-100 flex items-center px-3 gap-2 flex-shrink-0 bg-white">
+      <!-- Sidebar toggle button -->
+      <button
+        @click="sidebarOpen = !sidebarOpen"
+        class="p-1.5 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+        :title="sidebarOpen ? 'Thu gọn sidebar' : 'Mở rộng sidebar'"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+          <line x1="4" y1="6" x2="20" y2="6"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="18" x2="20" y2="18"/>
+        </svg>
+      </button>
+      <div class="w-px h-4 bg-gray-200"></div>
+      <div class="flex items-center gap-1 text-xs text-gray-400">
+        <span>MT-LIMS</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        <span class="text-gray-700 font-medium">{% block breadcrumb %}Trang chủ{% endblock %}</span>
+      </div>
+      <div class="ml-auto flex items-center gap-2">
+        {% block topbar_actions %}{% endblock %}
+        <button class="p-1.5 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 overflow-auto bg-white">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+</body>
+</html>
