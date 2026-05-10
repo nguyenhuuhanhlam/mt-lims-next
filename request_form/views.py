@@ -37,6 +37,28 @@ def request_create(request):
 
 
 @login_required
+def request_edit(request, pk):
+    instance = Request.objects.get(pk=pk)
+    if request.method == "POST":
+        form = RequestForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            return redirect("request_list")
+    else:
+        form = RequestForm(instance=instance)
+    return render(request, "request_form/request_create.html", {"form": form, "is_edit": True})
+
+
+@login_required
+def request_delete(request, pk):
+    instance = Request.objects.get(pk=pk)
+    if request.method == "POST":
+        instance.delete()
+        return redirect("request_list")
+    return render(request, "request_form/request_confirm_delete.html", {"request_obj": instance})
+
+
+@login_required
 def dashboard(request):
     today = timezone.now().date()
     context = {

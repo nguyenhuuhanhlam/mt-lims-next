@@ -1,19 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}Tạo phiếu yêu cầu · MT-LIMS{% endblock %}
-{% block breadcrumb %}Phiếu yêu cầu · Tạo mới{% endblock %}
+{% block title %}{% if is_edit %}Chỉnh sửa{% else %}Tạo mới{% endif %} phiếu yêu cầu · MT-LIMS{% endblock %}
+{% block breadcrumb %}Phiếu yêu cầu · {% if is_edit %}Chỉnh sửa{% else %}Tạo mới{% endif %}{% endblock %}
 
 {% block content %}
 <div class="max-w-2xl mx-auto px-5 py-10">
-  
+
   <!-- Header Section -->
   <div class="flex items-center gap-3 mb-8">
-    <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100/50">
-      <i data-lucide="file-plus-2" class="w-5 h-5"></i>
+    <div
+      class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100/50">
+      <i data-lucide="{% if is_edit %}edit-3{% else %}file-plus-2{% endif %}" class="w-5 h-5"></i>
     </div>
     <div>
-      <h1 class="text-lg font-bold text-gray-900">Tạo phiếu yêu cầu mới</h1>
-      <p class="text-[12px] text-gray-400 mt-0.5 font-medium">Điền đầy đủ thông tin bên dưới để khởi tạo.</p>
+      <h1 class="text-lg font-bold text-gray-900">{% if is_edit %}Chỉnh sửa phiếu yêu cầu{% else %}Tạo phiếu yêu cầu
+        mới{% endif %}</h1>
+      <p class="text-[12px] text-gray-400 mt-0.5 font-medium">Điền đầy đủ thông tin bên dưới để {% if is_edit %}cập
+        nhật{% else %}khởi tạo{% endif %}.</p>
     </div>
   </div>
 
@@ -23,54 +26,160 @@
       {% csrf_token %}
 
       <!-- Grid for Title and Type -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Title -->
-        <div class="md:col-span-2 space-y-1.5">
-          <label for="id_title" class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+        <div class="space-y-1.5">
+          <label for="{{ form.title.id_for_label }}"
+            class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
             Tiêu đề yêu cầu <span class="text-red-400">*</span>
           </label>
-          <input type="text" name="title" id="id_title" required
-            value="{{ form.title.value|default:'' }}"
-            placeholder="Ví dụ: Hợp đồng tháng 5"
-            class="w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all" />
+          {{ form.title }}
+          {% if form.title.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ form.title.errors.0 }}</p>{% endif %}
         </div>
 
         <!-- Type -->
         <div class="space-y-1.5">
-          <label for="id_type" class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+          <label for="{{ form.type.id_for_label }}"
+            class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
             Loại phiếu <span class="text-red-400">*</span>
           </label>
-          <select name="type" id="id_type"
-            class="w-full px-3 py-2 text-[13px] font-bold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all appearance-none cursor-pointer">
-            <option value="slip" {% if form.type.value == 'slip' %}selected{% endif %}>Phiếu lẻ</option>
-            <option value="contract" {% if form.type.value == 'contract' %}selected{% endif %}>Hợp đồng</option>
-          </select>
+          <div class="relative">
+            {{ form.type }}
+            <i data-lucide="chevron-down"
+              class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none"></i>
+          </div>
+          {% if form.type.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ form.type.errors.0 }}</p>{% endif %}
         </div>
       </div>
 
-      <!-- User Selection -->
-      <div class="space-y-1.5">
-        <label for="id_created_by" class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
-          Người phụ trách <span class="text-red-400">*</span>
-        </label>
-        <select name="created_by" id="id_created_by" required
-          class="w-full px-3 py-2 text-[13px] font-bold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all appearance-none cursor-pointer">
-          {% for user in form.fields.created_by.queryset %}
-            <option value="{{ user.id }}" {% if form.created_by.value|add:0 == user.id %}selected{% elif not form.created_by.value and request.user.id == user.id %}selected{% endif %}>
-              {{ user.get_full_name|default:user.username }}
-            </option>
-          {% endfor %}
-        </select>
+      <!-- Grid for Status and User -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Status -->
+        <div class="space-y-1.5">
+          <label for="{{ form.status.id_for_label }}"
+            class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+            Trạng thái <span class="text-red-400">*</span>
+          </label>
+          <div class="relative">
+            {{ form.status }}
+            <i data-lucide="chevron-down"
+              class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none"></i>
+          </div>
+          {% if form.status.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ form.status.errors.0 }}</p>{% endif %}
+        </div>
+
+        <!-- User Selection -->
+        <div class="space-y-1.5">
+          <label for="{{ form.created_by.id_for_label }}"
+            class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+            Người phụ trách <span class="text-red-400">*</span>
+          </label>
+          <div class="relative">
+            {{ form.created_by }}
+            <i data-lucide="chevron-down"
+              class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none"></i>
+          </div>
+          {% if form.created_by.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ form.created_by.errors.0 }}</p>{% endif %}
+        </div>
+      </div>
+
+      <!-- Project Information Section -->
+      <div class="pt-4 border-t border-gray-50">
+        <h3 class="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.15em] mb-4">Thông tin dự án</h3>
+        <div class="space-y-4">
+          <div class="space-y-1.5">
+            <label for="{{ form.project_name.id_for_label }}" class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+              Tên dự án
+            </label>
+            {{ form.project_name }}
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label for="{{ form.work_package.id_for_label }}" class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                Gói thầu
+              </label>
+              {{ form.work_package }}
+            </div>
+            <div class="space-y-1.5">
+              <label for="{{ form.location.id_for_label }}" class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                Địa điểm
+              </label>
+              {{ form.location }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Requesting Unit Section -->
+      <div class="pt-4 border-t border-gray-50">
+        <h3 class="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.15em] mb-4">Đơn vị yêu cầu</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="md:col-span-2 space-y-1.5">
+            <label for="{{ form.unit_address.id_for_label }}" class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+              Địa chỉ
+            </label>
+            {{ form.unit_address }}
+          </div>
+          <div class="space-y-1.5">
+            <label for="{{ form.unit_telephone.id_for_label }}" class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+              Số điện thoại
+            </label>
+            {{ form.unit_telephone }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Participants -->
+      <div class="space-y-4" x-data="{ 
+          list: {{ form.participants.value|default:'[]'|safe }}, 
+          add() { this.list.push({ name: '', position: '' }) },
+          remove(index) { this.list.splice(index, 1) }
+      }">
+        <div class="flex items-center justify-between">
+          <label class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+            Danh sách người tham gia
+          </label>
+          <button type="button" @click="add()"
+            class="flex items-center gap-1.5 text-[10px] font-bold text-indigo-600 hover:text-indigo-700 transition-all">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+            Thêm người
+          </button>
+        </div>
+
+        <!-- Hidden input to store JSON -->
+        <input type="hidden" name="participants" :value="JSON.stringify(list)">
+
+        <div class="space-y-3">
+          <template x-for="(item, index) in list" :key="index">
+            <div class="flex items-center gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
+              <div class="flex-1 grid grid-cols-2 gap-3 p-3 bg-gray-50/50 border border-gray-100 rounded-xl">
+                <input type="text" x-model="item.name" placeholder="Họ tên..."
+                  class="bg-transparent border-none p-0 text-[12px] font-bold text-gray-900 focus:ring-0 placeholder-gray-300">
+                <input type="text" x-model="item.position" placeholder="Chức vụ..."
+                  class="bg-transparent border-none p-0 text-[12px] font-medium text-gray-500 focus:ring-0 placeholder-gray-300">
+              </div>
+              <button type="button" @click="remove(index)" class="p-2 text-gray-300 hover:text-red-500 transition-all">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </template>
+
+          <div x-show="list.length === 0"
+            class="py-10 border-2 border-dashed border-gray-50 rounded-2xl flex flex-col items-center justify-center gap-2 text-gray-300">
+            <i data-lucide="users" class="w-6 h-6"></i>
+            <p class="text-[11px] font-bold">Chưa có người tham gia</p>
+          </div>
+        </div>
       </div>
 
       <!-- Content -->
       <div class="space-y-1.5">
-        <label for="id_content" class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+        <label for="{{ form.content.id_for_label }}"
+          class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
           Nội dung chi tiết <span class="text-red-400">*</span>
         </label>
-        <textarea name="content" id="id_content" rows="4" required
-          placeholder="Mô tả nội dung..."
-          class="w-full px-3 py-3 text-[13px] font-medium border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white placeholder-gray-300 resize-none transition-all">{{ form.content.value|default:'' }}</textarea>
+        {{ form.content }}
+        {% if form.content.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ form.content.errors.0 }}</p>{% endif %}
       </div>
 
       <!-- Actions -->
@@ -81,7 +190,8 @@
         </a>
         <button type="submit"
           class="flex items-center gap-2 px-6 py-2 bg-gray-900 text-white text-[12px] font-bold rounded-xl hover:bg-gray-800 transition-all shadow-sm">
-          Lưu phiếu yêu cầu
+          <i data-lucide="save" class="w-3.5 h-3.5"></i>
+          {% if is_edit %}Lưu thay đổi{% else %}Lưu phiếu yêu cầu{% endif %}
         </button>
       </div>
     </form>

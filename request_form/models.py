@@ -8,12 +8,23 @@ class Request(models.Model):
         CONTRACT = "contract", "Contract"
         SLIP = "slip", "Slip"
 
+    class Status(models.TextChoices):
+        REVIEWING = "reviewing", "Đang xem xét"
+        IN_PROGRESS = "in_progress", "Đang thực hiện"
+        COMPLETED = "completed", "Hoàn tất"
+        CANCELLED = "cancelled", "Hủy bỏ"
+
     # Identity
     title = models.CharField(max_length=255)
     type = models.CharField(
         max_length=20,
         choices=RequestType.choices,
         default=RequestType.SLIP,
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.REVIEWING,
     )
 
     # Relations
@@ -25,6 +36,9 @@ class Request(models.Model):
 
     # Content
     content = models.TextField()
+    participants = models.JSONField(default=list, blank=True)
+    project_information = models.JSONField(default=dict, blank=True)
+    requesting_unit = models.JSONField(default=dict, blank=True)
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)

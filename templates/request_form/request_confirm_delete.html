@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Xác nhận xoá · MT-LIMS{% endblock %}
+{% block breadcrumb %}Phiếu yêu cầu · Xoá{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-5 py-20">
+  
+  <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-xl text-center">
+    <div class="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-red-600 mx-auto mb-6 border border-red-100/50">
+      <i data-lucide="trash-2" class="w-8 h-8"></i>
+    </div>
+    
+    <h1 class="text-xl font-bold text-gray-900 mb-2">Xác nhận xoá phiếu?</h1>
+    <p class="text-[13px] text-gray-400 mb-8 font-medium leading-relaxed">
+      Bạn có chắc chắn muốn xoá phiếu <span class="text-gray-900 font-bold">"{{ request_obj.title }}"</span>? 
+      Hành động này không thể hoàn tác.
+    </p>
+
+    <form method="post" class="flex flex-col gap-3">
+      {% csrf_token %}
+      <button type="submit"
+        class="w-full py-3 bg-red-600 text-white text-[13px] font-bold rounded-xl hover:bg-red-700 transition-all shadow-md shadow-red-200">
+        Đồng ý xoá bản ghi
+      </button>
+      <a href="{% url 'request_list' %}"
+        class="w-full py-3 text-[13px] font-bold text-gray-400 hover:text-gray-900 transition-all">
+        Quay lại
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock %}
