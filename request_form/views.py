@@ -21,6 +21,20 @@ def request_list_api(request):
 @login_required
 def request_list(request):
     requests = Request.objects.select_related("created_by").order_by("-created_at")
+    
+    # HTMX Filtering
+    query = request.GET.get('q', '')
+    req_type = request.GET.get('type', 'all')
+    
+    if query:
+        requests = requests.filter(title__icontains=query)
+    
+    if req_type != 'all':
+        requests = requests.filter(type=req_type)
+        
+    if request.headers.get('HX-Request'):
+        return render(request, "request_form/partials/request_table_rows.html", {"requests": requests})
+        
     return render(request, "request_form/request_list.html", {"requests": requests})
 
 

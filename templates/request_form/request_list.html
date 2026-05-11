@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+
 {% block title %}Phiếu yêu cầu · MT-LIMS{% endblock %}
 {% block breadcrumb %}Phiếu yêu cầu{% endblock %}
 
@@ -28,21 +29,40 @@
             placeholder="Tìm kiếm..."
             class="pl-8 pr-3 py-1.5 text-[12px] border border-gray-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white transition-all shadow-sm"
             id="searchInput"
-            oninput="filterTable(this.value)"
+            name="q"
+            hx-get="{% url 'request_list' %}"
+            hx-trigger="keyup changed delay:300ms"
+            hx-target="#requestTableBody"
+            hx-include="[name='type']"
           />
         </div>
 
         <!-- Filter by type -->
         <div class="flex items-center p-0.5 bg-gray-100/50 rounded-lg border border-gray-100">
-          <button onclick="setFilter('all')" id="filter-all"
+          <button 
+            hx-get="{% url 'request_list' %}" 
+            hx-vals='{"type": "all"}' 
+            hx-target="#requestTableBody" 
+            onclick="setActiveFilter(this)"
+            id="filter-all"
             class="filter-btn active-filter px-3 py-1 text-[11px] font-bold rounded-md transition-all">
             Tất cả
           </button>
-          <button onclick="setFilter('contract')" id="filter-contract"
+          <button 
+            hx-get="{% url 'request_list' %}" 
+            hx-vals='{"type": "contract"}' 
+            hx-target="#requestTableBody" 
+            onclick="setActiveFilter(this)"
+            id="filter-contract"
             class="filter-btn px-3 py-1 text-[11px] font-bold rounded-md transition-all text-gray-500 hover:text-gray-900">
             Hợp đồng
           </button>
-          <button onclick="setFilter('slip')" id="filter-slip"
+          <button 
+            hx-get="{% url 'request_list' %}" 
+            hx-vals='{"type": "slip"}' 
+            hx-target="#requestTableBody" 
+            onclick="setActiveFilter(this)"
+            id="filter-slip"
             class="filter-btn px-3 py-1 text-[11px] font-bold rounded-md transition-all text-gray-500 hover:text-gray-900">
             Phiếu lẻ
           </button>
@@ -73,84 +93,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-50" id="requestTableBody">
-          {% for req in requests %}
-          <tr
-            class="hover:bg-indigo-50/30 cursor-pointer transition-all group request-row relative"
-            data-type="{{ req.type }}"
-            data-status="{{ req.status }}"
-            data-status-display="{{ req.get_status_display }}"
-            data-id="{{ req.id }}"
-            data-title="{{ req.title }}"
-            data-content="{{ req.content }}"
-            data-participants='{{ req.participants|safe }}'
-            data-project='{{ req.project_information|safe }}'
-            data-unit='{{ req.requesting_unit|safe }}'
-            data-created="{{ req.created_at|date:'d/m/Y H:i' }}"
-            data-author="{{ req.created_by.get_full_name|default:req.created_by.username }}"
-            data-reqtype="{{ req.get_type_display }}"
-            onclick="openDetail(this)"
-          >
-            <td class="px-5 py-2.5">
-              <input type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()" />
-            </td>
-            <td class="px-3 py-2.5">
-              <div class="flex flex-col">
-                <span class="text-[13px] font-bold text-gray-900 group-hover:text-indigo-600 transition-colors leading-tight">{{ req.title }}</span>
-                <span class="text-[11px] text-gray-400 line-clamp-1 font-medium">{{ req.content|truncatechars:50 }}</span>
-              </div>
-            </td>
-            <td class="px-3 py-2.5">
-              {% if req.type == 'contract' %}
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100/50">
-                Hợp đồng
-              </span>
-              {% else %}
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100/50">
-                Phiếu lẻ
-              </span>
-              {% endif %}
-            </td>
-            <td class="px-3 py-2.5">
-              {% if req.status == 'reviewing' %}
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-600 border border-amber-100/50">
-                {{ req.get_status_display }}
-              </span>
-              {% elif req.status == 'in_progress' %}
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100/50">
-                {{ req.get_status_display }}
-              </span>
-              {% elif req.status == 'completed' %}
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-600 border border-green-100/50">
-                {{ req.get_status_display }}
-              </span>
-              {% else %}
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-gray-50 text-gray-600 border border-gray-100/50">
-                {{ req.get_status_display }}
-              </span>
-              {% endif %}
-            </td>
-            <td class="px-3 py-2.5">
-              <div class="flex items-center gap-2">
-                <div class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[9px] font-bold text-gray-500">
-                  {{ req.created_by.username|first|upper }}
-                </div>
-                <span class="text-[12px] font-semibold text-gray-700">{{ req.created_by.get_full_name|default:req.created_by.username }}</span>
-              </div>
-            </td>
-            <td class="px-5 py-2.5 text-right">
-              <span class="text-[11px] font-semibold text-gray-400 group-hover:text-gray-600 transition-colors">{{ req.created_at|date:"d/m/Y H:i" }}</span>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="6" class="px-5 py-16 text-center">
-              <div class="flex flex-col items-center gap-3 text-gray-300">
-                <i data-lucide="file-x" class="w-6 h-6"></i>
-                <p class="text-[12px] font-bold text-gray-400">Trống</p>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
+          {% include "request_form/partials/request_table_rows.html" %}
         </tbody>
       </table>
     </div>
@@ -250,31 +193,13 @@
 </style>
 
 <script>
-  let currentFilter = 'all';
-
-  function setFilter(type) {
-    currentFilter = type;
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.classList.remove('active-filter');
-      btn.classList.add('text-gray-500', 'hover:text-gray-900');
+  function setActiveFilter(btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.classList.remove('active-filter');
+      b.classList.add('text-gray-500', 'hover:text-gray-900');
     });
-    const active = document.getElementById('filter-' + type);
-    active.classList.add('active-filter');
-    active.classList.remove('text-gray-500', 'hover:text-gray-900');
-    applyFilters();
-  }
-
-  function filterTable(query) { applyFilters(query); }
-
-  function applyFilters(query) {
-    query = query ?? document.getElementById('searchInput').value;
-    const rows = document.querySelectorAll('.request-row');
-    rows.forEach(row => {
-      const matchType = currentFilter === 'all' || row.dataset.type === currentFilter;
-      const matchQuery = !query || row.dataset.title.toLowerCase().includes(query.toLowerCase());
-      const show = matchType && matchQuery;
-      row.style.display = show ? '' : 'none';
-    });
+    btn.classList.add('active-filter');
+    btn.classList.remove('text-gray-500', 'hover:text-gray-900');
   }
 
   function openDetail(row) {
@@ -290,7 +215,13 @@
 
     // Render Project Information
     const projectEl = document.getElementById('detail-project');
-    const project = JSON.parse(row.dataset.project || '{}');
+    let project = {};
+    try {
+      project = JSON.parse(row.dataset.project || '{}');
+      if (typeof project === 'string') project = JSON.parse(project);
+    } catch (e) {
+      project = {};
+    }
     projectEl.innerHTML = `
       <div class="space-y-1">
         <p class="text-[10px] font-bold text-gray-400">Tên dự án</p>
@@ -310,7 +241,13 @@
 
     // Render Requesting Unit
     const unitEl = document.getElementById('detail-unit');
-    const unit = JSON.parse(row.dataset.unit || '{}');
+    let unit = {};
+    try {
+      unit = JSON.parse(row.dataset.unit || '{}');
+      if (typeof unit === 'string') unit = JSON.parse(unit);
+    } catch (e) {
+      unit = {};
+    }
     unitEl.innerHTML = `
       <div class="space-y-1">
         <p class="text-[10px] font-bold text-gray-400">Địa chỉ</p>
@@ -324,8 +261,19 @@
 
     // Render Participants
     const participantsEl = document.getElementById('detail-participants');
-    const participants = JSON.parse(row.dataset.participants || '[]');
-    if (participants.length > 0) {
+    let participants = [];
+    try {
+      const rawParticipants = row.dataset.participants;
+      participants = JSON.parse(rawParticipants || '[]');
+      if (typeof participants === 'string') {
+        participants = JSON.parse(participants);
+      }
+    } catch (e) {
+      console.error('Error parsing participants:', e);
+      participants = [];
+    }
+    
+    if (Array.isArray(participants) && participants.length > 0) {
       participantsEl.innerHTML = participants.map(p => `
         <div class="flex items-center justify-between p-2.5 bg-gray-50/50 rounded-lg border border-gray-100">
           <span class="text-[12px] font-bold text-gray-900">${p.name}</span>
@@ -370,6 +318,13 @@
     
     lucide.createIcons();
   }
+
+  // HTMX: Re-initialize icons after swap
+  document.body.addEventListener('htmx:afterSwap', function(evt) {
+    if (evt.detail.target.id === 'requestTableBody') {
+      lucide.createIcons();
+    }
+  });
 
   function closeDetail() {
     document.querySelectorAll('.request-row').forEach(r => r.classList.remove('bg-indigo-50/50', 'ring-1', 'ring-indigo-100'));

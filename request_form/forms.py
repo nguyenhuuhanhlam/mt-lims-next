@@ -5,30 +5,48 @@ from .models import Request
 
 class RequestForm(forms.ModelForm):
     # Field ẩn cho participants
-    participants = forms.CharField(required=False, widget=forms.HiddenInput())
+    participants = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(attrs={':value': 'JSON.stringify(list)'})
+    )
 
     # Các trường riêng lẻ cho project_information
     project_name = forms.CharField(
         label="Tên dự án", required=False,
-        widget=forms.TextInput(attrs={'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all'})
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all',
+            'x-model': 'projectData.project_name'
+        })
     )
     work_package = forms.CharField(
         label="Gói thầu", required=False,
-        widget=forms.TextInput(attrs={'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all'})
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all',
+            'x-model': 'projectData.work_package'
+        })
     )
     location = forms.CharField(
         label="Địa điểm", required=False,
-        widget=forms.TextInput(attrs={'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all'})
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all',
+            'x-model': 'projectData.location'
+        })
     )
 
     # Các trường riêng lẻ cho requesting_unit
     unit_address = forms.CharField(
         label="Địa chỉ đơn vị", required=False,
-        widget=forms.TextInput(attrs={'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all'})
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all',
+            'x-model': 'unitData.address'
+        })
     )
     unit_telephone = forms.CharField(
         label="Số điện thoại", required=False,
-        widget=forms.TextInput(attrs={'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all'})
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all',
+            'x-model': 'unitData.telephone'
+        })
     )
 
     class Meta:
@@ -56,8 +74,8 @@ class RequestForm(forms.ModelForm):
             'created_by': forms.Select(attrs={
                 'class': 'w-full px-3 py-2 text-[13px] font-bold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all appearance-none cursor-pointer',
             }),
-            'project_information': forms.HiddenInput(),
-            'requesting_unit': forms.HiddenInput(),
+            'project_information': forms.HiddenInput(attrs={':value': 'JSON.stringify(projectData)'}),
+            'requesting_unit': forms.HiddenInput(attrs={':value': 'JSON.stringify(unitData)'}),
         }
 
     def __init__(self, *args, **kwargs):
