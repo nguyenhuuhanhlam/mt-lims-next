@@ -5,29 +5,87 @@
 
 {% block content %}
 <div class="max-w-md mx-auto px-5 py-20">
-  
-  <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-xl text-center">
-    <div class="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-red-600 mx-auto mb-6 border border-red-100/50">
-      <i data-lucide="trash-2" class="w-8 h-8"></i>
-    </div>
-    
-    <h1 class="text-xl font-bold text-gray-900 mb-2">Xác nhận xoá phiếu?</h1>
-    <p class="text-[13px] text-gray-400 mb-8 font-medium leading-relaxed">
-      Bạn có chắc chắn muốn xoá phiếu <span class="text-gray-900 font-bold">"{{ request_obj.title }}"</span>? 
-      Hành động này không thể hoàn tác.
-    </p>
 
+  <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-xl"
+       x-data="{ typed: '', title: '{{ request_obj.title|escapejs }}', get matched() { return this.typed.trim() === this.title; } }">
+
+    {# Icon + Heading #}
+    <div class="flex flex-col items-center text-center mb-6">
+      <div class="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-red-500 mb-5 border border-red-100/60 shadow-sm">
+        <i data-lucide="trash-2" class="w-8 h-8"></i>
+      </div>
+      <h1 class="text-xl font-bold text-gray-900 mb-1">Xác nhận xoá phiếu?</h1>
+      <p class="text-[13px] text-gray-400 font-medium leading-relaxed">
+        Hành động này <span class="text-red-500 font-bold">không thể hoàn tác</span>.
+        Vui lòng nhập tên phiếu để xác nhận.
+      </p>
+    </div>
+
+    {# Tên phiếu cần xác nhận #}
+    <div class="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 mb-5 flex items-center gap-2">
+      <i data-lucide="file-text" class="w-4 h-4 text-gray-400 flex-shrink-0"></i>
+      <span class="text-[13px] font-bold text-gray-700 truncate">{{ request_obj.title }}</span>
+    </div>
+
+    {# Input xác nhận #}
+    <div class="mb-6">
+      <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+        Nhập tên phiếu để xác nhận
+      </label>
+      <input
+        id="confirm-title-input"
+        type="text"
+        x-model="typed"
+        autocomplete="off"
+        placeholder="Gõ chính xác tên phiếu..."
+        class="w-full border rounded-xl px-4 py-2.5 text-[13px] font-medium text-gray-800 outline-none transition-all placeholder:text-gray-300"
+        :class="typed.length === 0
+          ? 'border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100'
+          : matched
+            ? 'border-green-400 bg-green-50/40 ring-2 ring-green-100'
+            : 'border-red-300 bg-red-50/30 ring-2 ring-red-100'"
+      >
+      {# Feedback message #}
+      <p class="mt-1.5 text-[11px] font-semibold transition-all"
+         :class="typed.length === 0 ? 'text-transparent' : matched ? 'text-green-500' : 'text-red-400'">
+        <span x-show="typed.length > 0 && matched">
+          <i data-lucide="check-circle" class="w-3 h-3 inline -mt-0.5"></i> Tên phiếu khớp — có thể xoá
+        </span>
+        <span x-show="typed.length > 0 && !matched">
+          <i data-lucide="x-circle" class="w-3 h-3 inline -mt-0.5"></i> Tên phiếu chưa khớp
+        </span>
+        <span x-show="typed.length === 0">&nbsp;</span>
+      </p>
+      {% if error %}
+      <p class="mt-2 text-[12px] font-bold text-red-500 flex items-center gap-1">
+        <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> {{ error }}
+      </p>
+      {% endif %}
+    </div>
+
+    {# Form submit #}
     <form method="post" class="flex flex-col gap-3">
       {% csrf_token %}
-      <button type="submit"
-        class="w-full py-3 bg-red-600 text-white text-[13px] font-bold rounded-xl hover:bg-red-700 transition-all shadow-md shadow-red-200">
-        Đồng ý xoá bản ghi
+      <input type="hidden" name="confirm_title" :value="typed">
+
+      <button
+        id="confirm-delete-btn"
+        type="submit"
+        :disabled="!matched"
+        :class="matched
+          ? 'bg-red-600 hover:bg-red-700 shadow-md shadow-red-200 cursor-pointer opacity-100'
+          : 'bg-red-200 cursor-not-allowed opacity-60'"
+        class="w-full py-3 text-white text-[13px] font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+        <i data-lucide="trash-2" class="w-4 h-4"></i>
+        Xoá vĩnh viễn phiếu này
       </button>
+
       <a href="{% url 'request_list' %}"
-        class="w-full py-3 text-[13px] font-bold text-gray-400 hover:text-gray-900 transition-all">
-        Quay lại
+        class="w-full py-3 text-[13px] font-bold text-gray-400 hover:text-gray-700 transition-all text-center">
+        Huỷ, quay lại danh sách
       </a>
     </form>
+
   </div>
 </div>
 {% endblock %}

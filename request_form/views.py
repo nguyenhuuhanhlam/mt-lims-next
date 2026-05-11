@@ -1,10 +1,10 @@
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
-from .forms import RequestForm
-from .models import Request
+from .forms import RequestForm, MaterialTestForm
+from .models import Request, MaterialTest
 
 
 # ─── API (giữ lại để tương thích) ──────────────────────────
@@ -67,8 +67,15 @@ def request_edit(request, pk):
 def request_delete(request, pk):
     instance = Request.objects.get(pk=pk)
     if request.method == "POST":
-        instance.delete()
-        return redirect("request_list")
+        confirm_title = request.POST.get("confirm_title", "").strip()
+        if confirm_title == instance.title:
+            instance.delete()
+            return redirect("request_list")
+        # Tên không khớp — render lại trang với thông báo lỗi
+        return render(request, "request_form/request_confirm_delete.html", {
+            "request_obj": instance,
+            "error": "Tên phiếu không khớp. Vui lòng thử lại.",
+        })
     return render(request, "request_form/request_confirm_delete.html", {"request_obj": instance})
 
 
@@ -83,3 +90,80 @@ def dashboard(request):
         "recent_requests": Request.objects.order_by("-created_at")[:8],
     }
     return render(request, "dashboard.html", context)
+
+
+# ─── Material Test Views (HTMX) ─────────────────────────────────────────
+
+@login_required
+def test_list_partial(request, request_id):
+    req_obj = get_object_or_404(Request, pk=request_id)
+    tests = req_obj.tests.all().order_by('-created_at')
+    form = MaterialTestForm()
+    return render(request, "request_form/partials/test_list.html", {
+        "request_obj": req_obj,
+        "tests": tests,
+        "form": form
+    })
+
+
+@login_required
+def test_create(request, request_id):
+    req_obj = get_object_or_404(Request, pk=request_id)
+    if request.method == "POST":
+        form = MaterialTestForm(request.POST)
+        if form.is_valid():
+            test = form.save(commit=False)
+            test.request = req_obj
+            test.save()
+            tests = req_obj.tests.all().order_by('-created_at')
+            return render(request, "request_form/partials/test_list.html", {
+                "request_obj": req_obj,
+                "tests": tests,
+                "form": MaterialTestForm()
+            })
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+@login_required
+def test_upload_file(request, test_id, file_type):
+    test = get_object_or_404(MaterialTest, pk=test_id)
+    if request.method == "POST":
+        file_obj = request.FILES.get('file')
+        if file_obj:
+            if file_type == 'method':
+                test.method_file = file_obj
+                test.method_uploader = request.user
+            elif file_type == 'result':
+                test.result_file = file_obj
+                test.result_uploader = request.user
+            test.save()
+            return render(request, "request_form/partials/test_card.html", {"test": test})
+    return JsonResponse({"error": "Upload failed"}, status=400)
+
+
+@login_required
+def test_delete(request, test_id):
+    test = get_object_or_404(MaterialTest, pk=test_id)
+    if request.method == "DELETE":
+        test.delete()
+        return HttpResponse("")
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
+@login_required
+def test_edit(request, test_id):
+    test = get_object_or_404(MaterialTest, pk=test_id)
+    if request.method == "POST":
+        form = MaterialTestForm(request.POST, instance=test)
+        if form.is_valid():
+            form.save()
+            return render(request, "request_form/partials/test_card.html", {"test": test})
+    else:
+        form = MaterialTestForm(instance=test)
+    return render(request, "request_form/partials/test_edit_card.html", {"test": test, "form": form})
+
+
+@login_required
+def test_cancel_edit(request, test_id):
+    test = get_object_or_404(MaterialTest, pk=test_id)
+    return render(request, "request_form/partials/test_card.html", {"test": test})

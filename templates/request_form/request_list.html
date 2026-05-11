@@ -102,9 +102,12 @@
   <!-- ── RIGHT: Detail Panel ── -->
   <div
     id="detailPanel"
-    class="hidden flex-col w-[380px] flex-shrink-0 border-l border-gray-100 bg-white overflow-hidden shadow-xl transition-all duration-300 ease-in-out transform translate-x-full"
+    class="hidden relative flex-col w-[380px] flex-shrink-0 border-l border-gray-100 bg-white overflow-hidden shadow-xl transition-all duration-300 ease-in-out transform translate-x-full"
     style="display: none;"
   >
+    <!-- Resizer -->
+    <div id="panelResizer" class="absolute top-0 left-0 w-1.5 h-full cursor-col-resize hover:bg-indigo-400 bg-transparent transition-colors z-50"></div>
+
     <!-- Panel Header -->
     <div class="h-12 border-b border-gray-100 px-5 flex items-center justify-between flex-shrink-0 bg-gray-50/30">
       <div class="flex items-center gap-2 overflow-hidden">
@@ -117,56 +120,84 @@
     </div>
 
     <!-- Panel Body -->
-    <div class="flex-1 overflow-auto p-6 space-y-6">
+    <div class="flex-1 overflow-hidden flex flex-col" x-data="{ tab: 'info' }">
+      <!-- Tabs Header -->
+      <div class="flex items-center gap-6 px-6 pt-4 border-b border-gray-100 flex-shrink-0 bg-white">
+        <button @click="tab = 'info'" 
+                :class="{ 'text-indigo-600 border-indigo-600': tab === 'info', 'text-gray-400 border-transparent hover:text-gray-900': tab !== 'info' }" 
+                class="pb-3 text-[11px] font-bold uppercase tracking-widest border-b-2 transition-colors">
+          Thông tin chung
+        </button>
+        <button @click="tab = 'tests'" 
+                :class="{ 'text-indigo-600 border-indigo-600': tab === 'tests', 'text-gray-400 border-transparent hover:text-gray-900': tab !== 'tests' }" 
+                class="pb-3 text-[11px] font-bold uppercase tracking-widest border-b-2 transition-colors">
+          Bài Test
+        </button>
+      </div>
 
-      <!-- Stats section -->
-      <div class="grid grid-cols-2 gap-4">
-        <div class="space-y-1">
-          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Loại yêu cầu</p>
-          <div id="detail-type"></div>
-        </div>
-        <div class="space-y-1">
-          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Trạng thái</p>
-          <div id="detail-status" class="pt-0.5">
+      <!-- Tabs Content -->
+      <div class="flex-1 overflow-auto p-6">
+        
+        <!-- Tab 1: Info -->
+        <div x-show="tab === 'info'" class="space-y-6">
+          <!-- Stats section -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Loại yêu cầu</p>
+              <div id="detail-type"></div>
+            </div>
+            <div class="space-y-1">
+              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Trạng thái</p>
+              <div id="detail-status" class="pt-0.5">
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4 pt-2">
+            <div class="flex items-center justify-between">
+               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Người tạo</span>
+               <span id="detail-author" class="text-[12px] font-bold text-gray-900"></span>
+            </div>
+
+            <div class="flex items-center justify-between">
+               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ngày tạo</span>
+               <span id="detail-created" class="text-[12px] font-bold text-gray-900"></span>
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-gray-100">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Thông tin dự án</p>
+            <div id="detail-project" class="space-y-2.5">
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-gray-100">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Đơn vị yêu cầu</p>
+            <div id="detail-unit" class="space-y-2.5">
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-gray-100">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Người tham gia</p>
+            <div id="detail-participants" class="space-y-2">
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-gray-100">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Nội dung</p>
+            <div class="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+              <p id="detail-content" class="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap font-medium"></p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="space-y-4 pt-2">
-        <div class="flex items-center justify-between">
-           <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Người tạo</span>
-           <span id="detail-author" class="text-[12px] font-bold text-gray-900"></span>
+        <!-- Tab 2: Tests -->
+        <div x-show="tab === 'tests'" style="display: none;">
+          <div id="detail-tests">
+            <!-- Danh sách bài test sẽ được load qua HTMX ở đây -->
+          </div>
         </div>
 
-        <div class="flex items-center justify-between">
-           <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ngày tạo</span>
-           <span id="detail-created" class="text-[12px] font-bold text-gray-900"></span>
-        </div>
-      </div>
-
-      <div class="pt-6 border-t border-gray-100">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Thông tin dự án</p>
-        <div id="detail-project" class="space-y-2.5">
-        </div>
-      </div>
-
-      <div class="pt-6 border-t border-gray-100">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Đơn vị yêu cầu</p>
-        <div id="detail-unit" class="space-y-2.5">
-        </div>
-      </div>
-
-      <div class="pt-6 border-t border-gray-100">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Người tham gia</p>
-        <div id="detail-participants" class="space-y-2">
-        </div>
-      </div>
-
-      <div class="pt-6 border-t border-gray-100">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Nội dung</p>
-        <div class="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
-          <p id="detail-content" class="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap font-medium"></p>
-        </div>
       </div>
     </div>
 
@@ -316,14 +347,19 @@
       panel.classList.remove('hidden', 'translate-x-full');
     }, 10);
     
+    // Load Tests via HTMX
+    const testContainer = document.getElementById('detail-tests');
+    testContainer.innerHTML = '<div class="flex justify-center p-6"><i data-lucide="loader-2" class="w-5 h-5 text-indigo-500 animate-spin"></i></div>';
+    htmx.ajax('GET', '/requests/' + row.dataset.id + '/tests/', {target: '#detail-tests', swap: 'innerHTML'}).then(() => {
+      lucide.createIcons();
+    });
+    
     lucide.createIcons();
   }
 
   // HTMX: Re-initialize icons after swap
   document.body.addEventListener('htmx:afterSwap', function(evt) {
-    if (evt.detail.target.id === 'requestTableBody') {
-      lucide.createIcons();
-    }
+    lucide.createIcons();
   });
 
   function closeDetail() {
@@ -335,5 +371,46 @@
       panel.style.display = 'none';
     }, 300);
   }
+
+  // Resizer logic
+  const detailPanel = document.getElementById('detailPanel');
+  const resizer = document.getElementById('panelResizer');
+  let isResizing = false;
+  let startX;
+  let startWidth;
+
+  resizer.addEventListener('mousedown', function(e) {
+    isResizing = true;
+    startX = e.clientX;
+    startWidth = parseInt(document.defaultView.getComputedStyle(detailPanel).width, 10);
+    
+    // Remove transitions to prevent lag while dragging
+    detailPanel.classList.remove('transition-all', 'duration-300', 'ease-in-out');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none'; // Prevent text highlighting
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', function(e) {
+    if (!isResizing) return;
+    const newWidth = startWidth - (e.clientX - startX);
+    // Limit width between 300px and 800px
+    if (newWidth >= 300 && newWidth <= 800) {
+      detailPanel.style.width = newWidth + 'px';
+    }
+  });
+
+  window.addEventListener('mouseup', function(e) {
+    if (isResizing) {
+      isResizing = false;
+      document.body.style.cursor = 'default';
+      document.body.style.userSelect = '';
+      
+      // Re-add transitions after a short delay
+      setTimeout(() => {
+        detailPanel.classList.add('transition-all', 'duration-300', 'ease-in-out');
+      }, 50);
+    }
+  });
 </script>
 {% endblock %}
