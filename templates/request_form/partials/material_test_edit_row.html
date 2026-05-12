@@ -1,0 +1,60 @@
+<tr class="border-b border-indigo-100 bg-indigo-50/40" id="test-row-{{ test.id }}">
+  <td colspan="7" class="px-4 py-3">
+    <form
+      hx-post="{% url 'test_edit' test.id %}"
+      hx-target="#test-row-{{ test.id }}"
+      hx-swap="outerHTML"
+      class="flex flex-col gap-3">
+      {% csrf_token %}
+
+      <!-- Row 1: các trường chính -->
+      <div class="flex items-end gap-3 flex-wrap">
+        <div class="flex flex-col gap-1 w-28">
+          <label class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Mã số</label>
+          {{ form.test_code }}
+        </div>
+        <div class="flex flex-col gap-1 flex-1 min-w-[140px]">
+          <label class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Loại vật liệu</label>
+          {{ form.material_type }}
+        </div>
+        <div class="flex flex-col gap-1 w-24">
+          <label class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Số lượng</label>
+          {{ form.quantity }}
+        </div>
+        <div class="flex flex-col gap-1 w-20">
+          <label class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Đơn vị</label>
+          {{ form.unit }}
+        </div>
+        <div class="flex flex-col gap-1 w-32">
+          <label class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Ngày TN</label>
+          {{ form.test_date }}
+        </div>
+      </div>
+
+      <!-- Row 2: nội dung + nút -->
+      <div class="flex items-end gap-3">
+        <div class="flex flex-col gap-1 flex-1">
+          <label class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Nội dung</label>
+          {{ form.content }}
+        </div>
+        <div class="flex gap-2 pb-0.5">
+          <button
+            type="button"
+            hx-get="{% url 'test_row_cancel_edit' test.id %}"
+            hx-target="#test-row-{{ test.id }}"
+            hx-swap="outerHTML"
+            class="px-3 py-1.5 text-[11px] font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors">
+            Hủy
+          </button>
+          <button
+            type="submit"
+            class="px-3 py-1.5 text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors">
+            Lưu
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </td>
+</tr>
+<script>lucide.createIcons();</script>

@@ -160,6 +160,13 @@
         <span x-show="sidebarOpen" x-cloak class="font-medium text-[13px]">Phiếu yêu cầu</span>
       </a>
 
+      <a href="{% url 'material_test_list' %}"
+         class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-all group {% if request.resolver_match.url_name == 'material_test_list' %}nav-active{% endif %}"
+         :class="sidebarOpen ? '' : 'justify-center px-0'">
+        <i data-lucide="flask-conical" class="w-3.5 h-3.5 flex-shrink-0"></i>
+        <span x-show="sidebarOpen" x-cloak class="font-medium text-[13px]">Thí nghiệm vật liệu</span>
+      </a>
+
       <a href="#"
          class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-all group"
          :class="sidebarOpen ? '' : 'justify-center px-0'">

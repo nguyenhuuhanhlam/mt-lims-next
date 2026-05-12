@@ -1,0 +1,71 @@
+<tr class="border-b border-gray-50 hover:bg-indigo-50/20 transition-colors group" id="test-row-{{ test.id }}">
+  <td class="px-4 py-2.5">
+    <span class="text-[12px] font-semibold text-gray-800 font-mono">{{ test.test_code }}</span>
+  </td>
+  <td class="px-4 py-2.5">
+    <span class="text-[12px] text-gray-700">{{ test.material_type }}</span>
+  </td>
+  <td class="px-4 py-2.5">
+    <a href="{% url 'request_list' %}?highlight={{ test.request.pk }}"
+       class="text-[12px] text-indigo-600 hover:underline font-medium truncate max-w-[200px] block">
+      {{ test.request.title }}
+    </a>
+  </td>
+  <td class="px-4 py-2.5 text-center">
+    <span class="text-[12px] text-gray-600">{{ test.quantity }} {{ test.unit }}</span>
+  </td>
+  <td class="px-4 py-2.5 text-center">
+    {% if test.test_date %}
+      <span class="text-[11px] text-gray-500">{{ test.test_date|date:"d/m/Y" }}</span>
+    {% else %}
+      <span class="text-[11px] text-gray-300">—</span>
+    {% endif %}
+  </td>
+  <td class="px-4 py-2.5 text-center">
+    {% if test.is_completed %}
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>Hoàn tất
+      </span>
+    {% else %}
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-100">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>Chờ file
+      </span>
+    {% endif %}
+  </td>
+  <td class="px-4 py-2.5 text-center">
+    <div class="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      {% if test.method_file %}
+        <a href="{{ test.method_file.url }}" target="_blank"
+           class="p-1 rounded-md hover:bg-indigo-100 text-gray-400 hover:text-indigo-600 transition-colors"
+           title="File Quy định">
+          <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+        </a>
+      {% endif %}
+      {% if test.result_file %}
+        <a href="{{ test.result_file.url }}" target="_blank"
+           class="p-1 rounded-md hover:bg-emerald-100 text-gray-400 hover:text-emerald-600 transition-colors"
+           title="File Kết quả">
+          <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
+        </a>
+      {% endif %}
+      <div class="w-px h-3 bg-gray-200 mx-0.5"></div>
+      <button
+        hx-get="{% url 'test_row_edit' test.id %}"
+        hx-target="#test-row-{{ test.id }}"
+        hx-swap="outerHTML"
+        class="p-1 rounded-md hover:bg-indigo-100 text-gray-400 hover:text-indigo-600 transition-colors"
+        title="Chỉnh sửa">
+        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+      </button>
+      <button
+        hx-delete="{% url 'test_delete' test.id %}"
+        hx-target="#test-row-{{ test.id }}"
+        hx-swap="outerHTML"
+        hx-confirm="Xóa bài thí nghiệm '{{ test.test_code }}'?"
+        class="p-1 rounded-md hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors"
+        title="Xóa">
+        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+  </td>
+</tr>

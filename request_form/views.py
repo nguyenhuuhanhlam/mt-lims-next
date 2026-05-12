@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db import models
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
@@ -92,6 +93,39 @@ def dashboard(request):
     return render(request, "dashboard.html", context)
 
 
+# ─── Material Test List (trang độc lập) ────────────────────────────────
+
+@login_required
+def material_test_list(request):
+    tests = MaterialTest.objects.select_related("request", "method_uploader", "result_uploader").order_by("-created_at")
+
+    q = request.GET.get("q", "").strip()
+    status_filter = request.GET.get("status", "all")
+
+    if q:
+        tests = tests.filter(
+            models.Q(test_code__icontains=q) |
+            models.Q(material_type__icontains=q) |
+            models.Q(request__title__icontains=q)
+        )
+
+    if status_filter == "completed":
+        tests = [t for t in tests if t.is_completed]
+    elif status_filter == "pending":
+        tests = [t for t in tests if not t.is_completed]
+
+    filter_options = [
+        ("all", "Tất cả"),
+        ("completed", "Hoàn tất"),
+        ("pending", "Chờ file"),
+    ]
+
+    if request.headers.get("HX-Request"):
+        return render(request, "request_form/partials/material_test_table_rows.html", {"tests": tests, "q": q, "status_filter": status_filter})
+
+    return render(request, "request_form/material_test_list.html", {"tests": tests, "q": q, "status_filter": status_filter, "filter_options": filter_options})
+
+
 # ─── Material Test Views (HTMX) ─────────────────────────────────────────
 
 @login_required
@@ -167,3 +201,26 @@ def test_edit(request, test_id):
 def test_cancel_edit(request, test_id):
     test = get_object_or_404(MaterialTest, pk=test_id)
     return render(request, "request_form/partials/test_card.html", {"test": test})
+
+
+# ─── Row Inline Edit (dùng cho trang material_test_list) ────────────────
+
+@login_required
+def test_row_edit(request, test_id):
+    """Trả về edit row (form nằm trong <tr>) để inline edit trên trang danh sách."""
+    test = get_object_or_404(MaterialTest, pk=test_id)
+    if request.method == "POST":
+        form = MaterialTestForm(request.POST, instance=test)
+        if form.is_valid():
+            form.save()
+            return render(request, "request_form/partials/material_test_row.html", {"test": test})
+    else:
+        form = MaterialTestForm(instance=test)
+    return render(request, "request_form/partials/material_test_edit_row.html", {"test": test, "form": form})
+
+
+@login_required
+def test_row_cancel_edit(request, test_id):
+    """Hủy inline edit — trả về display row bình thường."""
+    test = get_object_or_404(MaterialTest, pk=test_id)
+    return render(request, "request_form/partials/material_test_row.html", {"test": test})
