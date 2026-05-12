@@ -223,4 +223,22 @@ def test_row_edit(request, test_id):
 def test_row_cancel_edit(request, test_id):
     """Hủy inline edit — trả về display row bình thường."""
     test = get_object_or_404(MaterialTest, pk=test_id)
-    return render(request, "request_form/partials/material_test_row.html", {"test": test})
+    return render(request, "request_form/partials/material_test_row.html", {"test": test})
+
+
+@login_required
+def test_row_upload_file(request, test_id, file_type):
+    """Upload file (method/result) từ trang danh sách /tests — render lại material_test_row."""
+    test = get_object_or_404(MaterialTest, pk=test_id)
+    if request.method == "POST":
+        file_obj = request.FILES.get("file")
+        if file_obj:
+            if file_type == "method":
+                test.method_file = file_obj
+                test.method_uploader = request.user
+            elif file_type == "result":
+                test.result_file = file_obj
+                test.result_uploader = request.user
+            test.save()
+            return render(request, "request_form/partials/material_test_row.html", {"test": test})
+    return JsonResponse({"error": "Upload failed"}, status=400)

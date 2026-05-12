@@ -9,7 +9,7 @@ from request_form.views import (
     test_list_partial, test_create, test_upload_file,
     test_delete, test_edit, test_cancel_edit,
     material_test_list,
-    test_row_edit, test_row_cancel_edit,
+    test_row_edit, test_row_cancel_edit, test_row_upload_file,
 )
 
 urlpatterns = [
@@ -37,6 +37,7 @@ urlpatterns = [
     path("tests/<int:test_id>/cancel_edit/", test_cancel_edit, name="test_cancel_edit"),
     path("tests/<int:test_id>/row-edit/", test_row_edit, name="test_row_edit"),
     path("tests/<int:test_id>/row-cancel/", test_row_cancel_edit, name="test_row_cancel_edit"),
+    path("tests/<int:test_id>/row-upload/<str:file_type>/", test_row_upload_file, name="test_row_upload_file"),
 
     # API (legacy)
     path("api/requests/", request_list_api, name="request_list_api"),
