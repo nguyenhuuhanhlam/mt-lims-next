@@ -139,55 +139,54 @@
       <div class="flex-1 overflow-auto p-6">
         
         <!-- Tab 1: Info -->
-        <div x-show="tab === 'info'" class="space-y-6">
+        <div x-show="tab === 'info'" class="space-y-3">
           <!-- Stats section -->
-          <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-1">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Loại yêu cầu</p>
-              <div id="detail-type"></div>
-            </div>
-            <div class="space-y-1">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Trạng thái</p>
-              <div id="detail-status" class="pt-0.5">
+          <div class="bg-gray-50/70 rounded-xl p-3.5 border border-gray-100">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Loại yêu cầu</p>
+                <div id="detail-type"></div>
+              </div>
+              <div class="space-y-1">
+                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Trạng thái</p>
+                <div id="detail-status" class="pt-0.5">
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="space-y-4 pt-2">
+          <div class="bg-gray-50/70 rounded-xl p-3.5 border border-gray-100 space-y-3">
             <div class="flex items-center justify-between">
                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Người tạo</span>
                <span id="detail-author" class="text-[12px] font-bold text-gray-900"></span>
             </div>
-
             <div class="flex items-center justify-between">
                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ngày tạo</span>
                <span id="detail-created" class="text-[12px] font-bold text-gray-900"></span>
             </div>
           </div>
 
-          <div class="pt-6 border-t border-gray-100">
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Thông tin dự án</p>
+          <div class="bg-gray-50/70 rounded-xl p-3.5 border border-gray-100">
+            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-3">Thông tin dự án</p>
             <div id="detail-project" class="space-y-2.5">
             </div>
           </div>
 
-          <div class="pt-6 border-t border-gray-100">
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Đơn vị yêu cầu</p>
+          <div class="bg-gray-50/70 rounded-xl p-3.5 border border-gray-100">
+            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-3">Đơn vị yêu cầu</p>
             <div id="detail-unit" class="space-y-2.5">
             </div>
           </div>
 
-          <div class="pt-6 border-t border-gray-100">
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Người tham gia</p>
+          <div class="bg-gray-50/70 rounded-xl p-3.5 border border-gray-100">
+            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-3">Người tham gia</p>
             <div id="detail-participants" class="space-y-2">
             </div>
           </div>
 
-          <div class="pt-6 border-t border-gray-100">
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Nội dung</p>
-            <div class="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
-              <p id="detail-content" class="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap font-medium"></p>
-            </div>
+          <div class="bg-gray-50/70 rounded-xl p-3.5 border border-gray-100">
+            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-3">Nội dung</p>
+            <p id="detail-content" class="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap font-medium"></p>
           </div>
         </div>
 

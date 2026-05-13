@@ -1,4 +1,5 @@
 import json
+import os
 from django.contrib.auth.models import User
 
 from django.db import models
@@ -101,6 +102,16 @@ class MaterialTest(models.Model):
     @property
     def is_completed(self):
         return bool(self.method_file and self.result_file)
+
+    def delete(self, *args, **kwargs):
+        # Xóa file vật lý khỏi disk trước khi xóa record
+        if self.method_file:
+            if os.path.isfile(self.method_file.path):
+                os.remove(self.method_file.path)
+        if self.result_file:
+            if os.path.isfile(self.result_file.path):
+                os.remove(self.result_file.path)
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"{self.test_code} - {self.material_type}"

@@ -259,6 +259,11 @@
     document.addEventListener('alpine:initialized', () => {
       lucide.createIcons();
     });
+
+    // HTMX: Gửi CSRF token trong tất cả các request (DELETE, PUT, PATCH, POST)
+    document.body.addEventListener('htmx:configRequest', function(evt) {
+      evt.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    });
   </script>
 
 </body>
