@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_edit %}Chỉnh sửa{% else %}Tạo mới{% endif %} nhóm · MT-LIMS{% endblock %}
+{% block breadcrumb %}Nhóm · {% if is_edit %}Chỉnh sửa{% else %}Tạo mới{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-5 py-10">
+
+  <!-- Header Section -->
+  <div class="flex items-center gap-3 mb-8">
+    <div
+      class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100/50">
+      <i data-lucide="users-round" class="w-5 h-5"></i>
+    </div>
+    <div>
+      <h1 class="text-sm font-bold text-gray-900">{% if is_edit %}Chỉnh sửa nhóm{% else %}Tạo nhóm mới{% endif %}</h1>
+      <p class="text-[12px] text-gray-400 mt-0.5 font-medium">{% if is_edit %}Cập nhật thông tin nhóm: <b>{{ group_obj.name }}</b>{% else %}Điền tên nhóm và thiết lập quyền hạn.{% endif %}</p>
+    </div>
+  </div>
+
+  <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+
+      <!-- Nhóm 1: Thông tin cơ bản -->
+      <div class="bg-gray-50/70 rounded-xl p-4 border border-gray-100">
+        <h3 class="text-[9px] font-bold text-indigo-500 uppercase tracking-[0.15em] mb-4">Thông tin cơ bản</h3>
+        <div class="space-y-1.5">
+          <label for="{{ form.name.id_for_label }}" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+            Tên nhóm <span class="text-red-400">*</span>
+          </label>
+          {{ form.name }}
+          {% if form.name.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ form.name.errors.0 }}</p>{% endif %}
+        </div>
+      </div>
+
+      <!-- Nhóm 2: Quyền hạn -->
+      <div class="bg-gray-50/70 rounded-xl p-4 border border-gray-100">
+        <h3 class="text-[9px] font-bold text-indigo-500 uppercase tracking-[0.15em] mb-4">Quyền hạn</h3>
+        <div class="space-y-1.5">
+          <label for="{{ form.permissions.id_for_label }}" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+            Danh sách quyền
+          </label>
+          {{ form.permissions }}
+          <p class="text-[10px] text-gray-400 font-medium">Giữ phím Ctrl (hoặc Cmd) để chọn nhiều quyền.</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-end gap-3 pt-4">
+        <a href="{% url 'group_list' %}"
+          class="px-4 py-2 text-[12px] font-bold text-gray-400 hover:text-gray-900 transition-all underline underline-offset-4 decoration-gray-200">
+          Huỷ bỏ
+        </a>
+        <button type="submit"
+          class="flex items-center gap-2 px-8 py-2.5 bg-gray-900 text-white text-[12px] font-bold rounded-xl hover:bg-gray-800 transition-all shadow-lg shadow-gray-200">
+          <i data-lucide="save" class="w-4 h-4"></i>
+          {% if is_edit %}Lưu thay đổi{% else %}Tạo nhóm{% endif %}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

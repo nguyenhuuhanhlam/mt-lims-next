@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Xác nhận xóa người dùng · MT-LIMS{% endblock %}
+{% block breadcrumb %}Người dùng · Xác nhận xóa{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-5 py-20">
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-xl text-center space-y-6">
+        
+        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto border border-red-100 animate-bounce">
+            <i data-lucide="user-minus" class="w-8 h-8"></i>
+        </div>
+
+        <div class="space-y-2">
+            <h1 class="text-xl font-bold text-gray-900">Xóa người dùng này?</h1>
+            <p class="text-[13px] text-gray-500 font-medium">Hành động này không thể hoàn tác. Mọi dữ liệu liên quan đến tài khoản <b>{{ user_obj.username }}</b> sẽ bị ảnh hưởng.</p>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 text-left">
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Thông tin người dùng</p>
+            <p class="text-[13px] font-bold text-gray-900">{{ user_obj.get_full_name|default:user_obj.username }}</p>
+            <p class="text-[11px] text-gray-500 font-medium">{{ user_obj.email|default:"Không có email" }}</p>
+        </div>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div class="space-y-2 text-left">
+                <label class="text-[10px] font-bold text-red-600 uppercase tracking-widest">Nhập lại Tên đăng nhập để xác nhận:</label>
+                <input 
+                    type="text" 
+                    name="confirm_username" 
+                    placeholder="{{ user_obj.username }}" 
+                    required
+                    class="w-full px-4 py-2 text-[13px] font-bold border border-red-100 bg-red-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all"
+                >
+                {% if error %}
+                <p class="text-[11px] text-red-500 font-bold mt-1 animate-pulse">{{ error }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center gap-3 pt-2">
+                <a href="{% url 'user_list' %}" class="flex-1 px-4 py-2.5 text-[12px] font-bold text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all border border-gray-200">
+                    Hủy bỏ
+                </a>
+                <button type="submit" class="flex-1 px-4 py-2.5 text-[12px] font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all shadow-lg shadow-red-200">
+                    Xác nhận xóa
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
