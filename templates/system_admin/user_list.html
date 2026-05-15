@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Quản lý người dùng · MT-LIMS{% endblock %}
+{% block breadcrumb %}Người dùng{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'user_create' %}"
+   class="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-xs font-bold rounded-xl hover:bg-gray-800 transition-all shadow-sm">
+  <i data-lucide="plus" class="w-4 h-4"></i>
+  Thêm người dùng
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="flex h-full bg-white">
+
+  <!-- Main List Area -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- Toolbar -->
+    <div class="px-5 py-3 flex items-center justify-between border-b border-gray-50 bg-gray-50/20">
+      <div class="flex items-center gap-3">
+        <!-- Search -->
+        <div class="relative group">
+          <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-indigo-500 transition-colors"></i>
+          <input
+            type="text"
+            placeholder="Tìm theo tên, email..."
+            class="pl-8 pr-3 py-1.5 text-[12px] border border-gray-200 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white transition-all shadow-sm"
+            id="userSearchInput"
+            name="q"
+            value="{{ q }}"
+            hx-get="{% url 'user_list' %}"
+            hx-trigger="keyup changed delay:300ms"
+            hx-target="#userTableBody"
+          />
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest" id="userCount">{{ users|length }} người dùng</span>
+        <div class="w-px h-3.5 bg-gray-200 mx-1"></div>
+        <button class="p-1.5 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200">
+          <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="flex-1 overflow-auto">
+      <table class="w-full text-left border-separate border-spacing-0" id="userTable">
+        <thead class="sticky top-0 bg-white/80 backdrop-blur-md z-10">
+          <tr class="border-b border-gray-100">
+            <th class="px-5 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Người dùng</th>
+            <th class="px-3 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Email</th>
+            <th class="px-3 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-32 text-center">Trạng thái</th>
+            <th class="px-3 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-32 text-center">Vai trò</th>
+            <th class="px-5 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-48 text-right">Lần đăng nhập cuối</th>
+            <th class="px-5 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-24 text-right">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50" id="userTableBody">
+          {% include "system_admin/partials/user_table_rows.html" %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Re-initialize Lucide icons after HTMX swaps
+  document.body.addEventListener('htmx:afterSwap', function(evt) {
+    if (evt.detail.target.id === 'userTableBody') {
+      lucide.createIcons();
+      // Update count if possible
+      const rows = evt.detail.target.querySelectorAll('tr:not(.empty-row)').length;
+      document.getElementById('userCount').textContent = rows + ' người dùng';
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,47 @@
+services:
+  web:
+    # Build image từ Dockerfile trong thư mục hiện tại
+    build: .
+
+    # Tên hiển thị của Container trong Synology Container Manager
+    container_name: mt-lims-app
+
+    # Tự động chạy lại app nếu NAS khởi động lại hoặc app bị lỗi
+    restart: always
+
+    ports:
+      # ÁNH XẠ CỔNG:
+      # Định dạng: "Cổng trên NAS : Cổng trong Container"
+      # - Bên phải (8000) là cố định của app Django.
+      # - Bên trái (8000) bạn có thể đổi thành cổng khác (ví dụ: 9000:8000) nếu bị trùng.
+      - "8000:8000"
+
+    env_file:
+      # Đọc các thông số cấu hình (DB, SECRET_KEY...) từ file .env
+      - .env
+
+    volumes:
+      # CẤU HÌNH LƯU TRỮ (Rất quan trọng trên NAS):
+
+      # 1. Thư mục Media: Nơi chứa file upload (kết quả test, tài liệu...).
+      # BẠN CÓ THỂ THAY ĐỔI đường dẫn bên trái dấu ':' để trỏ tới một Shared Folder cụ thể trên NAS.
+      # Ví dụ: - /volume1/docker/mt-lims/media:/app/media
+      - ./media:/volume2/SOMETHING_ONLINE/dockers/mt-lims-next/media
+
+      # 2. Thư mục Static: Chứa file giao diện (CSS, JS) sau khi gộp.
+      # Nên để mặc định theo thư mục dự án.
+      - ./static_root:/app/static_root
+
+    environment:
+      # Chuyển tiếp các biến môi trường từ .env vào container
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+
+networks:
+  # Thiết lập mạng để các container có thể giao tiếp (nếu sau này bạn cài thêm DB bằng Docker)
+  default:
+    name: mt-lims-network
