@@ -45,7 +45,9 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(','
 # Application definition
 
 INSTALLED_APPS = [
-    # "unfold",
+    "unfold",
+    "unfold.contrib.forms",
+    "unfold.contrib.inlines",
     
     'django.contrib.admin',
     'django.contrib.auth',

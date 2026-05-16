@@ -33,6 +33,24 @@ class Request(models.Model):
         on_delete=models.PROTECT,
         related_name="requests",
     )
+    customer = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="customer_requests",
+        limit_choices_to={'groups__name': 'Customers'},
+        verbose_name="Khách hàng",
+    )
+    manager = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="managed_requests",
+        limit_choices_to={'groups__name__in': ['Managers', 'Technicians']},
+        verbose_name="Người quản lý",
+    )
 
     # Content
     content = models.TextField()

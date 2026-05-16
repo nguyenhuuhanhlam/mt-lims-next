@@ -50,7 +50,7 @@ class RequestForm(forms.ModelForm):
     class Meta:
         model = Request
         fields = [
-            "title", "type", "status", "content", "created_by", "participants",
+            "title", "type", "status", "content", "created_by", "customer", "manager", "participants",
             "project_information", "requesting_unit"
         ]
         widgets = {
@@ -72,6 +72,12 @@ class RequestForm(forms.ModelForm):
             'created_by': forms.Select(attrs={
                 'class': 'w-full px-3 py-2 text-[13px] font-bold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all appearance-none cursor-pointer',
             }),
+            'customer': forms.Select(attrs={
+                'class': 'w-full px-3 py-2 text-[13px] font-bold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all appearance-none cursor-pointer',
+            }),
+            'manager': forms.Select(attrs={
+                'class': 'w-full px-3 py-2 text-[13px] font-bold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all appearance-none cursor-pointer',
+            }),
             'project_information': forms.HiddenInput(attrs={':value': 'JSON.stringify(projectData)'}),
             'requesting_unit': forms.HiddenInput(attrs={':value': 'JSON.stringify(unitData)'}),
         }
@@ -79,6 +85,15 @@ class RequestForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         import json
         super().__init__(*args, **kwargs)
+        
+        self.fields['created_by'].empty_label = "Chọn người phụ trách..."
+        self.fields['customer'].empty_label = "Chọn khách hàng..."
+        self.fields['manager'].empty_label = "Chọn người quản lý..."
+
+        if not self.instance.pk:
+            if 'manager' not in self.initial and 'created_by' in self.initial:
+                self.initial['manager'] = self.initial.get('created_by')
+                
         if self.instance.pk:
             # Load data từ JSON vào các trường riêng lẻ
             if self.instance.participants:

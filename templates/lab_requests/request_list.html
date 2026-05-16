@@ -161,6 +161,14 @@
                <span id="detail-author" class="text-[12px] font-bold text-gray-900"></span>
             </div>
             <div class="flex items-center justify-between">
+               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Khách hàng</span>
+               <span id="detail-customer" class="text-[12px] font-bold text-gray-900"></span>
+            </div>
+            <div class="flex items-center justify-between">
+               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Người quản lý</span>
+               <span id="detail-manager" class="text-[12px] font-bold text-gray-900"></span>
+            </div>
+            <div class="flex items-center justify-between">
                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ngày tạo</span>
                <span id="detail-created" class="text-[12px] font-bold text-gray-900"></span>
             </div>
@@ -240,6 +248,8 @@
     document.getElementById('detail-content').textContent = row.dataset.content;
     document.getElementById('detail-created').textContent = row.dataset.created;
     document.getElementById('detail-author').textContent = row.dataset.author;
+    document.getElementById('detail-customer').textContent = row.dataset.customer || '—';
+    document.getElementById('detail-manager').textContent = row.dataset.manager || '—';
     document.getElementById('detail-edit-link').href = '/requests/' + row.dataset.id + '/edit/';
     document.getElementById('detail-delete-link').href = '/requests/' + row.dataset.id + '/delete/';
 

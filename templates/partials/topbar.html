@@ -1,0 +1,29 @@
+		<header
+			class="h-12 border-b border-gray-100 flex items-center px-5 gap-3 flex-shrink-0 bg-white/80 backdrop-blur-md sticky top-0 z-20">
+			<!-- Sidebar toggle button -->
+			<button @click="sidebarOpen = !sidebarOpen"
+				class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-all flex-shrink-0 border border-transparent hover:border-gray-200"
+				:title="sidebarOpen ? 'Thu gọn sidebar' : 'Mở rộng sidebar'">
+				<i :data-lucide="sidebarOpen ? 'panel-left-close' : 'panel-left-open'" class="w-3.5 h-3.5"></i>
+			</button>
+
+			<div class="flex items-center gap-2 text-[11px] font-semibold">
+				<span class="text-gray-400">MT-LIMS</span>
+				<i data-lucide="chevron-right" class="w-2.5 h-2.5 text-gray-300"></i>
+				<span class="text-gray-900">{% block breadcrumb %}Trang chủ{% endblock %}</span>
+			</div>
+
+			<div class="ml-auto flex items-center gap-2">
+				{% block topbar_actions %}{% endblock %}
+				<div class="w-px h-3.5 bg-gray-100 mx-0.5"></div>
+				<button
+					class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-all border border-transparent hover:border-gray-200 relative">
+					<i data-lucide="bell" class="w-3.5 h-3.5"></i>
+					<span class="absolute top-1.5 right-1.5 w-1 h-1 bg-indigo-500 rounded-full border border-white"></span>
+				</button>
+				<button
+					class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-all border border-transparent hover:border-gray-200">
+					<i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+				</button>
+			</div>
+		</header>

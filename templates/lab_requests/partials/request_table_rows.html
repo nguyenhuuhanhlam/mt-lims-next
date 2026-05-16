@@ -12,6 +12,8 @@
   data-unit="{{ req.unit_json }}"
   data-created="{{ req.created_at|date:'d/m/Y H:i' }}"
   data-author="{{ req.created_by.get_full_name|default:req.created_by.username }}"
+  data-customer="{% if req.customer %}{{ req.customer.get_full_name|default:req.customer.username }}{% endif %}"
+  data-manager="{% if req.manager %}{{ req.manager.get_full_name|default:req.manager.username }}{% endif %}"
   data-reqtype="{{ req.get_type_display }}"
   onclick="openDetail(this)"
 >

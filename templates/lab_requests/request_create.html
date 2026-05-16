@@ -109,6 +109,36 @@
               {% if form.created_by.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ form.created_by.errors.0 }}</p>{% endif %}
             </div>
           </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Customer -->
+            <div class="space-y-1.5">
+              <label for="{{ form.customer.id_for_label }}"
+                class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                Khách hàng
+              </label>
+              <div class="relative">
+                {{ form.customer }}
+                <i data-lucide="chevron-down"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none"></i>
+              </div>
+              {% if form.customer.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ form.customer.errors.0 }}</p>{% endif %}
+            </div>
+
+            <!-- Manager -->
+            <div class="space-y-1.5">
+              <label for="{{ form.manager.id_for_label }}"
+                class="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                Người quản lý
+              </label>
+              <div class="relative">
+                {{ form.manager }}
+                <i data-lucide="chevron-down"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none"></i>
+              </div>
+              {% if form.manager.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ form.manager.errors.0 }}</p>{% endif %}
+            </div>
+          </div>
         </div>
       </div>
 
