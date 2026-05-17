@@ -5,11 +5,6 @@
 {% block breadcrumb %}Phiếu yêu cầu{% endblock %}
 
 {% block topbar_actions %}
-<a href="{% url 'request_create' %}"
-   class="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-xs font-bold rounded-xl hover:bg-gray-800 transition-all shadow-sm">
-  <i data-lucide="plus" class="w-4 h-4"></i>
-  Tạo mới
-</a>
 {% endblock %}
 
 {% block content %}
@@ -21,6 +16,11 @@
     <!-- Toolbar -->
     <div class="px-5 py-3 flex items-center justify-between border-b border-gray-50 bg-gray-50/20">
       <div class="flex items-center gap-3">
+        <a href="{% url 'request_create' %}" class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-[12px] font-bold rounded-lg hover:bg-gray-800 transition-all shadow-sm">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          Tạo yêu cầu
+        </a>
+        <div class="w-px h-3.5 bg-gray-200 mx-0.5"></div>
         <!-- Search -->
         <div class="relative group">
           <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-indigo-500 transition-colors"></i>
@@ -71,7 +71,7 @@
 
       <div class="flex items-center gap-2">
         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ requests|length }} bản ghi</span>
-        <button class="p-1.5 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200">
+        <button class="p-1.5 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200" title="Cài đặt hiển thị">
           <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
         </button>
       </div>

@@ -117,3 +117,9 @@ def group_delete(request, pk):
             "error": "Tên nhóm không khớp. Vui lòng thử lại.",
         })
     return render(request, "system_admin/group_confirm_delete.html", {"group_obj": group_obj})
+
+@login_required
+def group_members(request, pk):
+    group_obj = get_object_or_404(Group, pk=pk)
+    members = group_obj.user_set.all().order_by('username')
+    return render(request, "system_admin/partials/group_members.html", {"members": members})

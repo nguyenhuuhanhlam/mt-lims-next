@@ -49,7 +49,6 @@
           <tr class="border-b border-gray-100">
             <th class="px-5 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Tên nhóm</th>
             <th class="px-5 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Số lượng thành viên</th>
-            <th class="px-5 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-24 text-right">Thao tác</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-50" id="groupTableBody">
@@ -59,9 +58,87 @@
     </div>
   </div>
 
+  <!-- Detail Panel -->
+  <div
+    id="detailPanel"
+    class="hidden relative flex-col w-[380px] flex-shrink-0 border-l border-gray-100 bg-white overflow-hidden shadow-xl transition-all duration-300 ease-in-out transform translate-x-full"
+    style="display: none;"
+  >
+    <!-- Panel Header -->
+    <div class="h-12 border-b border-gray-100 px-5 flex items-center justify-between flex-shrink-0 bg-gray-50/30">
+      <div class="flex items-center gap-2 overflow-hidden">
+        <i data-lucide="users-round" class="w-3.5 h-3.5 text-indigo-500 flex-shrink-0"></i>
+        <span class="text-[13px] font-bold text-gray-900 truncate" id="detail-title">—</span>
+      </div>
+      <button onclick="closeDetail()" class="p-1.5 rounded-lg hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 text-gray-400 hover:text-gray-900 transition-all">
+        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+
+    <!-- Panel Body -->
+    <div class="flex-1 overflow-auto p-6 bg-white">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-[11px] font-bold uppercase tracking-widest text-gray-400">Danh sách thành viên</h3>
+      </div>
+      <div id="group-members-container" class="space-y-2">
+        <!-- Members will be loaded here via HTMX -->
+      </div>
+    </div>
+
+    <!-- Panel Footer -->
+    <div class="border-t border-gray-100 p-5 bg-gray-50/30 flex gap-2.5">
+      <a id="detail-edit-link" href="#" class="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-bold bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-gray-900 shadow-sm">
+        <i data-lucide="edit-3" class="w-3 h-3"></i>
+        Chỉnh sửa
+      </a>
+      <a id="detail-delete-link" href="#" class="px-3 py-2 text-[12px] font-bold bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 transition-all shadow-sm">
+        <i data-lucide="trash-2" class="w-3 h-3"></i>
+      </a>
+    </div>
+  </div>
+
 </div>
 
 <script>
+  function openDetail(row) {
+    // Highlight selected row
+    document.querySelectorAll('.request-row').forEach(r => r.classList.remove('bg-indigo-50/50', 'ring-1', 'ring-indigo-100'));
+    row.classList.add('bg-indigo-50/50', 'ring-1', 'ring-indigo-100');
+
+    // Update panel header
+    document.getElementById('detail-title').textContent = row.dataset.name;
+    
+    // Update footer links
+    document.getElementById('detail-edit-link').href = '/groups/' + row.dataset.id + '/edit/';
+    document.getElementById('detail-delete-link').href = '/groups/' + row.dataset.id + '/delete/';
+
+    // Show panel
+    const panel = document.getElementById('detailPanel');
+    panel.style.display = 'flex';
+    setTimeout(() => {
+      panel.classList.remove('hidden', 'translate-x-full');
+    }, 10);
+
+    // Load members via HTMX
+    const membersContainer = document.getElementById('group-members-container');
+    membersContainer.innerHTML = '<div class="flex justify-center p-6"><i data-lucide="loader-2" class="w-5 h-5 text-indigo-500 animate-spin"></i></div>';
+    htmx.ajax('GET', '/groups/' + row.dataset.id + '/members/', {target: '#group-members-container', swap: 'innerHTML'}).then(() => {
+      lucide.createIcons();
+    });
+    
+    lucide.createIcons();
+  }
+
+  function closeDetail() {
+    document.querySelectorAll('.request-row').forEach(r => r.classList.remove('bg-indigo-50/50', 'ring-1', 'ring-indigo-100'));
+    const panel = document.getElementById('detailPanel');
+    panel.classList.add('translate-x-full');
+    setTimeout(() => {
+      panel.classList.add('hidden');
+      panel.style.display = 'none';
+    }, 300);
+  }
+
   document.body.addEventListener('htmx:afterSwap', function(evt) {
     if (evt.detail.target.id === 'groupTableBody') {
       lucide.createIcons();
