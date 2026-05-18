@@ -2,9 +2,11 @@
   <!-- Header & Add Button -->
   <div class="flex items-center justify-between mb-4">
     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Danh sách Bài test ({{ tests|length }})</p>
+    {% if not is_technician %}
     <button @click="showModal = true" class="flex items-center gap-1 text-[10px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-md transition-all">
       <i data-lucide="plus" class="w-3 h-3"></i> Thêm test
     </button>
+    {% endif %}
   </div>
 
   <!-- Test Cards -->

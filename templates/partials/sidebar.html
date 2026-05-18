@@ -71,6 +71,7 @@
 				class="ml-auto text-[8px] font-bold bg-gray-100 text-gray-400 rounded-full px-1.5 py-0.5">Soon</span>
 		</a>
 
+		{% if is_manager %}
 		<!-- Group: System -->
 		<div class="pt-5 pb-1 px-3" x-show="sidebarOpen" x-cloak>
 			<span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">Hệ thống</span>
@@ -90,6 +91,7 @@
 			<i data-lucide="users-round" class="w-4 h-4 flex-shrink-0"></i>
 			<span x-show="sidebarOpen" x-cloak class="font-medium text-[13px]">Nhóm</span>
 		</a>
+		{% endif %}
 
 	</nav>
 

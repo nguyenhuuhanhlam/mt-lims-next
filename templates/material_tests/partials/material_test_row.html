@@ -3,7 +3,19 @@
     <span class="text-[12px] font-semibold text-gray-800 font-mono">{{ test.test_code }}</span>
   </td>
   <td class="px-4 py-2.5">
-    <span class="text-[12px] text-gray-700">{{ test.material_type }}</span>
+    <div class="flex flex-col">
+      <span class="text-[12px] text-gray-700">{{ test.material_type }}</span>
+      {% if test.tester or test.reviewer %}
+        <div class="flex items-center gap-1.5 mt-0.5">
+          {% if test.tester %}
+            <span class="text-[9px] text-indigo-500 font-semibold" title="Người thực hiện"><i data-lucide="user" class="w-2.5 h-2.5 inline -mt-0.5"></i> {{ test.tester.get_full_name|default:test.tester.username }}</span>
+          {% endif %}
+          {% if test.reviewer %}
+            <span class="text-[9px] text-amber-500 font-semibold" title="Người kiểm tra"><i data-lucide="shield-check" class="w-2.5 h-2.5 inline -mt-0.5"></i> {{ test.reviewer.get_full_name|default:test.reviewer.username }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
   </td>
   <td class="px-4 py-2.5">
     <a href="{% url 'request_list' %}?highlight={{ test.request.pk }}"
@@ -22,13 +34,13 @@
     {% endif %}
   </td>
   <td class="px-4 py-2.5 text-center">
-    {% if test.is_completed %}
+    {% if test.status == 'completed' %}
       <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>Hoàn tất
       </span>
     {% else %}
       <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-100">
-        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>Chờ file
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>Đang thực hiện
       </span>
     {% endif %}
   </td>
@@ -48,24 +60,39 @@
           <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
         </a>
       {% endif %}
-      <div class="w-px h-3 bg-gray-200 mx-0.5"></div>
-      <button
-        hx-get="{% url 'test_row_edit' test.id %}"
-        hx-target="#test-row-{{ test.id }}"
-        hx-swap="outerHTML"
-        class="p-1 rounded-md hover:bg-indigo-100 text-gray-400 hover:text-indigo-600 transition-colors"
-        title="Chỉnh sửa">
-        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-      </button>
-      <button
-        hx-delete="{% url 'test_delete' test.id %}"
-        hx-target="#test-row-{{ test.id }}"
-        hx-swap="outerHTML"
-        hx-confirm="Xóa bài thí nghiệm '{{ test.test_code }}'?"
-        class="p-1 rounded-md hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors"
-        title="Xóa">
-        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-      </button>
+
+      {% if is_technician %}
+        {# Technician: icon expand để xem chi tiết + upload Method trong expanded row #}
+        <div class="w-px h-3 bg-gray-200 mx-0.5"></div>
+        <button
+          hx-get="{% url 'test_row_edit' test.id %}"
+          hx-target="#test-row-{{ test.id }}"
+          hx-swap="outerHTML"
+          class="p-1 rounded-md hover:bg-indigo-100 text-gray-400 hover:text-indigo-600 transition-colors"
+          title="Xem chi tiết / Upload file">
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+        </button>
+      {% else %}
+        {# Manager/Admin: Edit + Delete đầy đủ #}
+        <div class="w-px h-3 bg-gray-200 mx-0.5"></div>
+        <button
+          hx-get="{% url 'test_row_edit' test.id %}"
+          hx-target="#test-row-{{ test.id }}"
+          hx-swap="outerHTML"
+          class="p-1 rounded-md hover:bg-indigo-100 text-gray-400 hover:text-indigo-600 transition-colors"
+          title="Chỉnh sửa">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+        </button>
+        <button
+          hx-delete="{% url 'test_delete' test.id %}"
+          hx-target="#test-row-{{ test.id }}"
+          hx-swap="outerHTML"
+          hx-confirm="Xóa bài thí nghiệm '{{ test.test_code }}'?"
+          class="p-1 rounded-md hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors"
+          title="Xóa">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+        </button>
+      {% endif %}
     </div>
   </td>
 </tr>

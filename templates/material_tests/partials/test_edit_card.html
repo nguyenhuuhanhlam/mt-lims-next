@@ -28,6 +28,23 @@
         {{ form.unit }}
       </div>
     </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="block text-[9px] font-bold text-gray-400 uppercase mb-1">Người thực hiện</label>
+        {{ form.tester }}
+      </div>
+      <div>
+        <label class="block text-[9px] font-bold text-gray-400 uppercase mb-1">Người kiểm tra</label>
+        {{ form.reviewer }}
+      </div>
+    </div>
+    <div>
+      <label class="block text-[9px] font-bold text-gray-400 uppercase mb-1">Trạng thái</label>
+      {{ form.status }}
+      {% if form.status.errors %}
+        <div class="text-[9px] text-red-500 font-semibold mt-1">{{ form.status.errors.0 }}</div>
+      {% endif %}
+    </div>
     <div>
         <label class="block text-[9px] font-bold text-gray-400 uppercase mb-1">Nội dung</label>
         {{ form.content }}

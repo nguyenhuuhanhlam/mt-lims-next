@@ -16,11 +16,13 @@
     <!-- Toolbar -->
     <div class="px-5 py-3 flex items-center justify-between border-b border-gray-50 bg-gray-50/20">
       <div class="flex items-center gap-3">
+        {% if not is_technician %}
         <a href="{% url 'request_create' %}" class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-[12px] font-bold rounded-lg hover:bg-gray-800 transition-all shadow-sm">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i>
           Tạo yêu cầu
         </a>
         <div class="w-px h-3.5 bg-gray-200 mx-0.5"></div>
+        {% endif %}
         <!-- Search -->
         <div class="relative group">
           <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-indigo-500 transition-colors"></i>
@@ -209,6 +211,7 @@
     </div>
 
     <!-- Panel Footer -->
+    {% if not is_technician %}
     <div class="border-t border-gray-100 p-5 bg-gray-50/30 flex gap-2.5">
       <a id="detail-edit-link" href="#" class="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-bold bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-gray-900 shadow-sm">
         <i data-lucide="edit-3" class="w-3 h-3"></i>
@@ -218,6 +221,7 @@
         <i data-lucide="trash-2" class="w-3 h-3"></i>
       </a>
     </div>
+    {% endif %}
   </div>
 </div>
 
@@ -231,6 +235,8 @@
 </style>
 
 <script>
+  const IS_TECHNICIAN = {{ is_technician|yesno:'true,false' }};
+
   function setActiveFilter(btn) {
     document.querySelectorAll('.filter-btn').forEach(b => {
       b.classList.remove('active-filter');
@@ -250,8 +256,10 @@
     document.getElementById('detail-author').textContent = row.dataset.author;
     document.getElementById('detail-customer').textContent = row.dataset.customer || '—';
     document.getElementById('detail-manager').textContent = row.dataset.manager || '—';
-    document.getElementById('detail-edit-link').href = '/requests/' + row.dataset.id + '/edit/';
-    document.getElementById('detail-delete-link').href = '/requests/' + row.dataset.id + '/delete/';
+    if (!IS_TECHNICIAN) {
+      document.getElementById('detail-edit-link').href = '/requests/' + row.dataset.id + '/edit/';
+      document.getElementById('detail-delete-link').href = '/requests/' + row.dataset.id + '/delete/';
+    }
 
     // Render Project Information
     const projectEl = document.getElementById('detail-project');

@@ -3,3 +3,4 @@ pymysql
 python-dotenv
 gunicorn
 whitenoise
+django-unfold

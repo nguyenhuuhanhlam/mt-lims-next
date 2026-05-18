@@ -1,5 +1,50 @@
 <tr class="border-b border-indigo-100 bg-indigo-50/40" id="test-row-{{ test.id }}">
   <td colspan="7" class="px-4 py-3">
+    {% if is_technician %}
+    {# Technician: chỉ hiển thị dữ liệu read-only #}
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+      <div>
+        <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Mã số</span>
+        <p class="text-[12px] font-semibold text-gray-800 font-mono">{{ test.test_code }}</p>
+      </div>
+      <div>
+        <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Loại vật liệu</span>
+        <p class="text-[12px] font-semibold text-gray-800">{{ test.material_type }}</p>
+      </div>
+      <div>
+        <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Số lượng</span>
+        <p class="text-[12px] font-semibold text-gray-800">{{ test.quantity }} {{ test.unit }}</p>
+      </div>
+      {% if test.test_date %}
+      <div>
+        <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Ngày TN</span>
+        <p class="text-[12px] font-semibold text-gray-800">{{ test.test_date|date:"d/m/Y" }}</p>
+      </div>
+      {% endif %}
+      {% if test.tester %}
+      <div>
+        <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Người thực hiện</span>
+        <p class="text-[12px] font-semibold text-indigo-600">{{ test.tester.get_full_name|default:test.tester.username }}</p>
+      </div>
+      {% endif %}
+      {% if test.reviewer %}
+      <div>
+        <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Người kiểm tra</span>
+        <p class="text-[12px] font-semibold text-amber-600">{{ test.reviewer.get_full_name|default:test.reviewer.username }}</p>
+      </div>
+      {% endif %}
+      <div>
+        <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Trạng thái</span>
+        <p class="text-[12px] font-semibold {% if test.status == 'completed' %}text-emerald-600{% else %}text-amber-600{% endif %}">
+          {{ test.get_status_display }}
+        </p>
+      </div>
+    </div>
+    {% if test.content %}
+    <p class="text-[11px] text-gray-500 mt-2 leading-relaxed">{{ test.content }}</p>
+    {% endif %}
+    {% else %}
+    {# Manager/Admin: form chỉnh sửa đầy đủ #}
     <form
       id="edit-form-{{ test.id }}"
       hx-post="{% url 'test_edit' test.id %}"
@@ -32,6 +77,25 @@
         </div>
       </div>
 
+      <!-- Row 1.5: roles & status -->
+      <div class="flex items-end gap-3 flex-wrap">
+        <div class="flex flex-col gap-1 flex-1 min-w-[140px]">
+          <label class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Người thực hiện</label>
+          {{ form.tester }}
+        </div>
+        <div class="flex flex-col gap-1 flex-1 min-w-[140px]">
+          <label class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Người kiểm tra</label>
+          {{ form.reviewer }}
+        </div>
+        <div class="flex flex-col gap-1 w-36">
+          <label class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Trạng thái</label>
+          {{ form.status }}
+          {% if form.status.errors %}
+            <span class="text-[9px] text-red-500 font-semibold mt-0.5">{{ form.status.errors.0 }}</span>
+          {% endif %}
+        </div>
+      </div>
+
       <!-- Row 2: nội dung -->
       <div class="flex items-end gap-3">
         <div class="flex flex-col gap-1 flex-1">
@@ -41,6 +105,7 @@
       </div>
 
     </form>
+    {% endif %}
 
     <!-- Row 3: Upload File (nằm ngoài form text để dùng multipart riêng) -->
     <div class="flex items-center gap-6 pt-2 mt-1 border-t border-indigo-100">
@@ -82,6 +147,7 @@
       </div>
 
       <!-- File Kết quả -->
+      {% if not is_technician %}
       <div class="flex items-center gap-2">
         <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest whitespace-nowrap">Kết quả:</span>
         {% if test.result_file %}
@@ -116,6 +182,7 @@
           </form>
         {% endif %}
       </div>
+      {% endif %}
 
       <!-- Nút Hủy / Lưu -->
       <div class="flex gap-2 ml-auto">
@@ -125,14 +192,16 @@
           hx-target="#test-row-{{ test.id }}"
           hx-swap="outerHTML"
           class="px-3 py-1.5 text-[11px] font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors">
-          Hủy
+          Đóng
         </button>
+        {% if not is_technician %}
         <button
           type="submit"
           form="edit-form-{{ test.id }}"
           class="px-3 py-1.5 text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors">
           Lưu
         </button>
+        {% endif %}
       </div>
 
     </div>

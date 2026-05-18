@@ -2,9 +2,28 @@ from django import forms
 from .models import MaterialTest
 
 class MaterialTestForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if 'tester' in self.fields:
+            self.fields['tester'].empty_label = "Chọn người thực hiện..."
+        if 'reviewer' in self.fields:
+            self.fields['reviewer'].empty_label = "Chọn người kiểm tra..."
+
+    def clean(self):
+        cleaned_data = super().clean()
+        status = cleaned_data.get('status')
+        reviewer = cleaned_data.get('reviewer')
+        
+        if status == 'completed':
+            if not self.user or reviewer != self.user:
+                self.add_error('status', 'Chỉ có người kiểm tra được phân công mới có thể chuyển trạng thái thành Hoàn tất.')
+                
+        return cleaned_data
+
     class Meta:
         model = MaterialTest
-        fields = ["test_code", "content", "material_type", "quantity", "unit", "test_date", "result_date"]
+        fields = ["test_code", "content", "material_type", "quantity", "unit", "test_date", "result_date", "tester", "reviewer", "status"]
         widgets = {
             'test_code': forms.TextInput(attrs={
                 'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all',
@@ -39,5 +58,14 @@ class MaterialTestForm(forms.ModelForm):
             'result_date': forms.DateInput(attrs={
                 'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all',
                 'type': 'date'
+            }),
+            'tester': forms.Select(attrs={
+                'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all',
+            }),
+            'reviewer': forms.Select(attrs={
+                'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all',
+            }),
+            'status': forms.Select(attrs={
+                'class': 'w-full px-3 py-2 text-[13px] font-semibold border border-gray-100 bg-gray-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all',
             }),
         }

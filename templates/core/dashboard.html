@@ -16,10 +16,12 @@
       <button class="p-1.5 text-gray-400 hover:text-gray-900 border border-gray-100 rounded-lg hover:bg-gray-50 transition-all">
         <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
       </button>
+      {% if not is_technician %}
       <a href="{% url 'request_create' %}" class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-[12px] font-bold rounded-lg hover:bg-gray-800 transition-all shadow-sm">
         <i data-lucide="plus" class="w-3.5 h-3.5"></i>
         Tạo yêu cầu
       </a>
+      {% endif %}
     </div>
   </div>
 

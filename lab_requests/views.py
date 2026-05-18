@@ -1,8 +1,14 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .forms import RequestForm
 from .models import Request
+
+def not_technician(user):
+    """Cho phép truy cập nếu user là superuser, Manager, hoặc không phải Technician."""
+    if user.is_superuser or user.groups.filter(name="Managers").exists():
+        return True
+    return not user.groups.filter(name="Technicians").exists()
 
 @login_required
 def request_list(request):
@@ -25,6 +31,7 @@ def request_list(request):
 
 
 @login_required
+@user_passes_test(not_technician)
 def request_create(request):
     if request.method == "POST":
         form = RequestForm(request.POST)
@@ -37,6 +44,7 @@ def request_create(request):
 
 
 @login_required
+@user_passes_test(not_technician)
 def request_edit(request, pk):
     instance = Request.objects.get(pk=pk)
     if request.method == "POST":
@@ -50,6 +58,7 @@ def request_edit(request, pk):
 
 
 @login_required
+@user_passes_test(not_technician)
 def request_delete(request, pk):
     instance = Request.objects.get(pk=pk)
     if request.method == "POST":

@@ -39,9 +39,31 @@ class MaterialTest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    status = models.CharField(
+        max_length=20,
+        choices=[("in_progress", "Đang thực hiện"), ("completed", "Hoàn tất")],
+        default="in_progress",
+    )
+    tester = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="assigned_tests",
+        limit_choices_to={'groups__name': 'Technicians'},
+    )
+    reviewer = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reviewed_tests",
+        limit_choices_to={'groups__name': 'Managers'},
+    )
+
     @property
     def is_completed(self):
-        return bool(self.method_file and self.result_file)
+        return self.status == "completed"
 
     def delete(self, *args, **kwargs):
         # Xóa file vật lý khỏi disk trước khi xóa record
