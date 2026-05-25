@@ -71,6 +71,19 @@
 				class="ml-auto text-[8px] font-bold bg-gray-100 text-gray-400 rounded-full px-1.5 py-0.5">Soon</span>
 		</a>
 
+		<!-- Group: Personal -->
+		<div class="pt-5 pb-1 px-3" x-show="sidebarOpen" x-cloak>
+			<span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">Cá nhân</span>
+		</div>
+		<div x-show="!sidebarOpen" class="border-t border-gray-100 my-4 mx-4"></div>
+
+		<a href="{% url 'user_tasks' %}"
+			class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-all group {% if request.resolver_match.url_name == 'user_tasks' %}nav-active{% endif %}"
+			:class="sidebarOpen ? '' : 'justify-center px-0'">
+			<i data-lucide="check-square" class="w-3.5 h-3.5 flex-shrink-0"></i>
+			<span x-show="sidebarOpen" x-cloak class="font-medium text-[13px]">Nhiệm vụ của bạn</span>
+		</a>
+
 		{% if is_manager %}
 		<!-- Group: System -->
 		<div class="pt-5 pb-1 px-3" x-show="sidebarOpen" x-cloak>

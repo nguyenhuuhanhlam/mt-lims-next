@@ -35,12 +35,14 @@
   </td>
   <td class="px-4 py-2.5 text-center">
     {% if test.status == 'completed' %}
-      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>Hoàn tất
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100 max-w-full">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block flex-shrink-0"></span>
+        <span class="truncate">Hoàn tất</span>
       </span>
     {% else %}
-      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-100">
-        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>Đang thực hiện
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-100 max-w-full">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block flex-shrink-0"></span>
+        <span class="truncate" title="Đang thực hiện">Đang thực hiện</span>
       </span>
     {% endif %}
   </td>

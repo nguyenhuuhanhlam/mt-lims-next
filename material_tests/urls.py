@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    material_test_list,
+    material_test_list, user_tasks,
     test_list_partial, test_create, test_upload_file,
     test_delete, test_edit, test_cancel_edit,
     test_row_edit, test_row_cancel_edit, test_row_upload_file,
@@ -8,6 +8,7 @@ from .views import (
 
 urlpatterns = [
     path("tests/", material_test_list, name="material_test_list"),
+    path("tasks/", user_tasks, name="user_tasks"),
     path("requests/<int:request_id>/tests/", test_list_partial, name="test_list_partial"),
     path("requests/<int:request_id>/tests/create/", test_create, name="test_create"),
     path("tests/<int:test_id>/upload/<str:file_type>/", test_upload_file, name="test_upload_file"),

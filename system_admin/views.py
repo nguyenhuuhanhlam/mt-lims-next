@@ -2,7 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User, Group
-from .forms import UserForm, GroupForm
+from .forms import UserForm, GroupForm, UserProfileForm
+from .models import UserProfile
 
 @login_required
 def user_list(request):
@@ -28,25 +29,44 @@ def user_list(request):
 def user_create(request):
     if request.method == "POST":
         form = UserForm(request.POST)
-        if form.is_valid():
-            form.save()
+        profile_form = UserProfileForm(request.POST, request.FILES)
+        if form.is_valid() and profile_form.is_valid():
+            user_obj = form.save()
+            profile_obj, created = UserProfile.objects.get_or_create(user=user_obj)
+            profile_form = UserProfileForm(request.POST, request.FILES, instance=profile_obj)
+            if profile_form.is_valid():
+                profile_form.save()
             return redirect("user_list")
     else:
         form = UserForm()
-    return render(request, "system_admin/user_form.html", {"form": form})
+        profile_form = UserProfileForm()
+    return render(request, "system_admin/user_form.html", {
+        "form": form,
+        "profile_form": profile_form
+    })
 
 
 @login_required
 def user_edit(request, pk):
     user_obj = get_object_or_404(User, pk=pk)
+    profile_obj, created = UserProfile.objects.get_or_create(user=user_obj)
     if request.method == "POST":
         form = UserForm(request.POST, instance=user_obj)
-        if form.is_valid():
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=profile_obj)
+        if form.is_valid() and profile_form.is_valid():
             form.save()
+            profile_form.save()
             return redirect("user_list")
     else:
         form = UserForm(instance=user_obj)
-    return render(request, "system_admin/user_form.html", {"form": form, "is_edit": True, "user_obj": user_obj})
+        profile_form = UserProfileForm(instance=profile_obj)
+    return render(request, "system_admin/user_form.html", {
+        "form": form,
+        "profile_form": profile_form,
+        "is_edit": True,
+        "user_obj": user_obj,
+        "profile_obj": profile_obj,
+    })
 
 
 @login_required

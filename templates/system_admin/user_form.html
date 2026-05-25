@@ -19,7 +19,7 @@
   </div>
 
   <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-    <form method="post" class="space-y-4">
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
       {% csrf_token %}
 
       <!-- Nhóm 1: Thông tin tài khoản -->
@@ -63,6 +63,47 @@
               Tên
             </label>
             {{ form.first_name }}
+          </div>
+          <div class="space-y-1.5">
+            <label for="{{ profile_form.phone_number.id_for_label }}" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+              Số điện thoại
+            </label>
+            {{ profile_form.phone_number }}
+            {% if profile_form.phone_number.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ profile_form.phone_number.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="space-y-1.5">
+            <label for="{{ profile_form.address.id_for_label }}" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+              Địa chỉ
+            </label>
+            {{ profile_form.address }}
+            {% if profile_form.address.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ profile_form.address.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="space-y-1.5">
+            <label for="{{ profile_form.department.id_for_label }}" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+              Phòng ban
+            </label>
+            {{ profile_form.department }}
+            {% if profile_form.department.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ profile_form.department.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="space-y-1.5">
+            <label for="{{ profile_form.position.id_for_label }}" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+              Chức vụ
+            </label>
+            {{ profile_form.position }}
+            {% if profile_form.position.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ profile_form.position.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="space-y-1.5 md:col-span-2">
+            <label for="{{ profile_form.avatar.id_for_label }}" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+              Ảnh đại diện
+            </label>
+            {{ profile_form.avatar }}
+            {% if profile_form.avatar.errors %}<p class="text-[10px] text-red-500 mt-1 font-medium">{{ profile_form.avatar.errors.0 }}</p>{% endif %}
+            {% if profile_obj.avatar %}
+              <div class="mt-2 flex items-center gap-3">
+                <img src="{{ profile_obj.avatar.url }}" class="w-12 h-12 rounded-xl object-cover border border-gray-200" alt="Avatar current">
+                <span class="text-[11px] text-gray-400 font-medium">Ảnh hiện tại</span>
+              </div>
+            {% endif %}
           </div>
         </div>
       </div>
