@@ -7,7 +7,7 @@ from .models import UserProfile
 
 @login_required
 def user_list(request):
-    users = User.objects.all().order_by("-date_joined")
+    users = User.objects.all().prefetch_related("groups").order_by("-date_joined")
     
     # HTMX Searching
     q = request.GET.get('q', '').strip()
@@ -19,10 +19,19 @@ def user_list(request):
             models.Q(email__icontains=q)
         )
         
+    # Filter by Group
+    group_filter = request.GET.get('group', 'all').strip().lower()
+    if group_filter != 'all':
+        users = users.filter(groups__name__iexact=group_filter)
+        
     if request.headers.get('HX-Request'):
         return render(request, "system_admin/partials/user_table_rows.html", {"users": users})
         
-    return render(request, "system_admin/user_list.html", {"users": users, "q": q})
+    return render(request, "system_admin/user_list.html", {
+        "users": users, 
+        "q": q,
+        "current_group": group_filter
+    })
 
 
 @login_required

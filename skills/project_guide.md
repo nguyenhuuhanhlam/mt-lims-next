@@ -134,6 +134,13 @@ def not_technician(user):
   ```
 * **Form & View integration:** Các view `user_create` và `user_edit` xử lý đồng thời hai ModelForm: `UserForm` và `UserProfileForm`, hỗ trợ cập nhật ảnh đại diện (`avatar`) thông qua request `enctype="multipart/form-data"`.
 
+### Trang danh sách Người dùng (`/users/`)
+Trang hiển thị danh sách toàn bộ người dùng trong hệ thống với các tùy chọn lọc và hiển thị tối ưu:
+* **Hiển thị Nhóm (Groups):** Thay vì cột "Lần đăng nhập cuối", hệ thống hiển thị danh sách các nhóm mà người dùng thuộc về dưới dạng huy hiệu (badge) màu sắc khác nhau để dễ nhận biết (Managers: `rose`, Technicians: `amber`, Customers: `blue`, Khác: `gray`). Tên các nhóm được tự động định dạng Title case (viết hoa chữ cái đầu).
+* **Bộ lọc nhanh (Quick Filters):** Thiết lập thanh công cụ dạng Segmented Control cho phép lọc nhanh danh sách người dùng theo các nhóm ("Tất cả", "Khách hàng", "Kỹ thuật viên", "Quản lý").
+* **Đồng bộ hóa HTMX:** Bộ lọc nhóm được đồng bộ hoàn toàn với ô tìm kiếm văn bản qua thuộc tính `hx-include`, gửi đồng thời cả hai tham số `q` và `group` lên server để thực hiện lọc kết hợp.
+* **Tối ưu hóa hiệu năng:** Queryset người dùng ở backend sử dụng `prefetch_related("groups")` để nạp trước quan hệ nhóm, loại bỏ nguy cơ xảy ra lỗi N+1 truy vấn khi render bảng.
+
 ---
 
 ## 4. Các Luồng Nghiệp vụ Chính

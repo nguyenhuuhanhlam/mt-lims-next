@@ -42,14 +42,30 @@
     </span>
     {% endif %}
   </td>
-  <td class="px-5 py-3 text-right">
-    <span class="text-[12px] font-bold text-gray-700">
-      {% if u.last_login %}
-      {{ u.last_login|date:"d/m/Y H:i" }}
-      {% else %}
-      <span class="text-gray-300 font-medium">Chưa đăng nhập</span>
-      {% endif %}
-    </span>
+  <td class="px-3 py-3 text-left">
+    <div class="flex flex-wrap gap-1">
+      {% for group in u.groups.all %}
+        {% if group.name|lower == "managers" %}
+          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-100/50">
+            {{ group.name|capfirst }}
+          </span>
+        {% elif group.name|lower == "technicians" %}
+          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-100/50">
+            {{ group.name|capfirst }}
+          </span>
+        {% elif group.name|lower == "customers" %}
+          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-100/50">
+            {{ group.name|capfirst }}
+          </span>
+        {% else %}
+          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-50 text-gray-600 border border-gray-100">
+            {{ group.name|capfirst }}
+          </span>
+        {% endif %}
+      {% empty %}
+        <span class="text-gray-300 font-medium text-[11px]">—</span>
+      {% endfor %}
+    </div>
   </td>
   <td class="px-5 py-3 text-right">
     <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

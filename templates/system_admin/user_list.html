@@ -33,7 +33,55 @@
             hx-get="{% url 'user_list' %}"
             hx-trigger="keyup changed delay:300ms"
             hx-target="#userTableBody"
+            hx-include="#groupFilterInput"
           />
+        </div>
+
+        <!-- Hidden Input for Group Filter -->
+        <input type="hidden" id="groupFilterInput" name="group" value="{{ current_group|default:'all' }}">
+
+        <!-- Filter by Group -->
+        <div class="flex items-center p-0.5 bg-gray-100/50 rounded-lg border border-gray-100">
+          <button 
+            hx-get="{% url 'user_list' %}" 
+            hx-vals='{"group": "all"}' 
+            hx-target="#userTableBody"
+            hx-include="#userSearchInput"
+            onclick="setGroupFilter(this, 'all')"
+            id="filter-all"
+            class="filter-btn {% if current_group == 'all' or not current_group %}active-filter bg-white text-gray-900 shadow-sm border border-gray-200{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-1 text-[11px] font-bold rounded-md transition-all">
+            Tất cả
+          </button>
+          <button 
+            hx-get="{% url 'user_list' %}" 
+            hx-vals='{"group": "customers"}' 
+            hx-target="#userTableBody"
+            hx-include="#userSearchInput"
+            onclick="setGroupFilter(this, 'customers')"
+            id="filter-customers"
+            class="filter-btn {% if current_group == 'customers' %}active-filter bg-white text-gray-900 shadow-sm border border-gray-200{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-1 text-[11px] font-bold rounded-md transition-all">
+            Khách hàng
+          </button>
+          <button 
+            hx-get="{% url 'user_list' %}" 
+            hx-vals='{"group": "technicians"}' 
+            hx-target="#userTableBody"
+            hx-include="#userSearchInput"
+            onclick="setGroupFilter(this, 'technicians')"
+            id="filter-technicians"
+            class="filter-btn {% if current_group == 'technicians' %}active-filter bg-white text-gray-900 shadow-sm border border-gray-200{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-1 text-[11px] font-bold rounded-md transition-all">
+            Kỹ thuật viên
+          </button>
+          <button 
+            hx-get="{% url 'user_list' %}" 
+            hx-vals='{"group": "managers"}' 
+            hx-target="#userTableBody"
+            hx-include="#userSearchInput"
+            onclick="setGroupFilter(this, 'managers')"
+            id="filter-managers"
+            class="filter-btn {% if current_group == 'managers' %}active-filter bg-white text-gray-900 shadow-sm border border-gray-200{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-1 text-[11px] font-bold rounded-md transition-all">
+            Quản lý
+          </button>
         </div>
       </div>
 
@@ -55,7 +103,7 @@
             <th class="px-3 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">Email</th>
             <th class="px-3 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-32 text-center">Trạng thái</th>
             <th class="px-3 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-32 text-center">Vai trò</th>
-            <th class="px-5 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-48 text-right">Lần đăng nhập cuối</th>
+            <th class="px-3 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-48 text-left">Nhóm</th>
             <th class="px-5 py-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 w-24 text-right">Thao tác</th>
           </tr>
         </thead>
@@ -66,9 +114,27 @@
     </div>
   </div>
 
-</div>
+<style>
+  .active-filter { 
+    background-color: #ffffff; 
+    color: #0f172a; 
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    border: 1px solid #e5e7eb;
+  }
+</style>
 
 <script>
+  function setGroupFilter(btn, value) {
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.classList.remove('active-filter', 'bg-white', 'text-gray-900', 'shadow-sm', 'border', 'border-gray-200');
+      b.classList.add('text-gray-500', 'hover:text-gray-900');
+    });
+    btn.classList.add('active-filter', 'bg-white', 'text-gray-900', 'shadow-sm', 'border', 'border-gray-200');
+    btn.classList.remove('text-gray-500', 'hover:text-gray-900');
+    
+    document.getElementById('groupFilterInput').value = value;
+  }
+
   // Re-initialize Lucide icons after HTMX swaps
   document.body.addEventListener('htmx:afterSwap', function(evt) {
     if (evt.detail.target.id === 'userTableBody') {
